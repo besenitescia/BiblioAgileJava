@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -147,29 +150,38 @@ public class App extends JFrame {
 				String etat = cbEtat.getModel().getSelectedItem().toString();
 				String personne = txtPersonne.getText();
 				int bookID = tmodel.getRowCount() + 1;
-				Bibliotheque.Livre.Auteur auteur = new Bibliotheque.Livre.Auteur(nomAuteur,prenomAuteur);
-				Bibliotheque.Livre livre = new Bibliotheque.Livre();
-				livre.bookID = bookID;
-				livre.auteur = auteur;
-				livre.titre = titre;
-				livre.presentation = presentation;
-				livre.parution = parution;
-				livre.colonne = colonne;
-				livre.rangee = rangee;
-				livre.url = url;
-				livre.etat = etat;
-				livre.personne = personne;
-				tmodel.addRow(livre.parseObject());
-				txtTitre.setText("");
-				txtPresentation.setText("");
-				txtParution.setText("");
-				txtColonne.setText("");
-				txtRangee.setText("");
-				txtNom.setText("");
-				txtPrenom.setText("");
-				txtUrl.setText("");
-				cbEtat.setSelectedIndex(0);
-				txtPersonne.setText("");
+				if(titre.length() == 0 || presentation.length() == 0 || parution.length() == 0 || colonne.length() == 0
+						|| rangee.length() == 0 || nomAuteur.length() == 0 || prenomAuteur.length() == 0)
+				{
+					JOptionPane.showMessageDialog(null,
+		        	          "Erreur: Veuillez remplir tous les champs avec un asterisk" , "Erreur",
+		        	          JOptionPane.ERROR_MESSAGE);
+				}
+				else{
+					Bibliotheque.Livre.Auteur auteur = new Bibliotheque.Livre.Auteur(nomAuteur,prenomAuteur);
+					Bibliotheque.Livre livre = new Bibliotheque.Livre();
+					livre.bookID = bookID;
+					livre.auteur = auteur;
+					livre.titre = titre;
+					livre.presentation = presentation;
+					livre.parution = parution;
+					livre.colonne = colonne;
+					livre.rangee = rangee;
+					livre.url = url;
+					livre.etat = etat;
+					livre.personne = personne;
+					tmodel.addRow(livre.parseObject());
+					txtTitre.setText("");
+					txtPresentation.setText("");
+					txtParution.setText("");
+					txtColonne.setText("");
+					txtRangee.setText("");
+					txtNom.setText("");
+					txtPrenom.setText("");
+					txtUrl.setText("");
+					cbEtat.setSelectedIndex(0);
+					txtPersonne.setText("");
+				}
 			}
 		});
 		btnNewButton.setBounds(610, 43, 99, 23);
@@ -226,7 +238,7 @@ public class App extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Titre :");
+		JLabel lblNewLabel = new JLabel("Titre* :");
 		lblNewLabel.setBounds(6, 16, 82, 18);
 		panel.add(lblNewLabel);
 		
@@ -235,34 +247,95 @@ public class App extends JFrame {
 		panel.add(txtTitre);
 		txtTitre.setColumns(10);
 		
-		lblAnne = new JLabel("Parution :");
+		lblAnne = new JLabel("Parution* :");
 		lblAnne.setBounds(6, 75, 82, 14);
 		panel.add(lblAnne);
 		
-		JLabel lblNewLabel_1 = new JLabel("Colonne :");
+		JLabel lblNewLabel_1 = new JLabel("Colonne* :");
 		lblNewLabel_1.setBounds(6, 100, 82, 14);
 		panel.add(lblNewLabel_1);
 		
-		lblRange = new JLabel("Rang\u00E9e :");
+		lblRange = new JLabel("Rang\u00E9e* :");
 		lblRange.setBounds(6, 131, 82, 14);
 		panel.add(lblRange);
 		
 		txtParution = new JTextField();
+		txtParution.getDocument().addDocumentListener(new DocumentListener() {
+		  	  public void changedUpdate(DocumentEvent e) {
+			  	  criteria();
+			  }
+			  public void removeUpdate(DocumentEvent e) {
+				  criteria();
+			  }
+			  public void insertUpdate(DocumentEvent e) {
+				  criteria();
+			  }
+			  public void criteria() {
+				  int currentyear = Calendar.getInstance().get(Calendar.YEAR);
+					if(Integer.parseInt(txtParution.getText()) > currentyear)
+			        {
+			        	JOptionPane.showMessageDialog(null,
+			        	          "Erreur: Entrez une année inférieur à "+currentyear , "Erreur",
+			        	          JOptionPane.ERROR_MESSAGE);				        	
+			        }
+				}
+	});
 		txtParution.setBounds(98, 72, 113, 20);
 		panel.add(txtParution);
 		txtParution.setColumns(10);
 		
 		txtColonne = new JTextField();
+		txtColonne.setToolTipText("Entrez un nombre supérieur à 0 et inférieur à 7");
+		txtColonne.getDocument().addDocumentListener(new DocumentListener() {
+			  	  public void changedUpdate(DocumentEvent e) {
+				  	  criteria();
+				  }
+				  public void removeUpdate(DocumentEvent e) {
+					  criteria();
+				  }
+				  public void insertUpdate(DocumentEvent e) {
+					  criteria();
+				  }
+				  public void criteria() {
+						if(Integer.parseInt(txtColonne.getText()) < 0 || Integer.parseInt(txtColonne.getText()) > 6)
+				        {
+				        	JOptionPane.showMessageDialog(null,
+				        	          "Erreur: Entrez un nombre supérieur à 0 et inférieur à 7", "Erreur",
+				        	          JOptionPane.ERROR_MESSAGE);				        	
+				        }
+					}
+		});
+		
 		txtColonne.setBounds(98, 97, 113, 20);
 		panel.add(txtColonne);
 		txtColonne.setColumns(10);
 		
 		txtRangee = new JTextField();
+		txtRangee.setToolTipText("Entrez un nombre supérieur à 0 et inférieur à 7");
+		txtRangee.getDocument().addDocumentListener(new DocumentListener() {
+		  	  public void changedUpdate(DocumentEvent e) {
+			  	  //criteria();
+			  }
+			  public void removeUpdate(DocumentEvent e) {
+				  
+			  }
+			  public void insertUpdate(DocumentEvent e) {
+				  criteria();
+			  }
+			  public void criteria() {
+					if(Integer.parseInt(txtRangee.getText()) < 0 || Integer.parseInt(txtRangee.getText()) > 6)
+			        {
+			        	JOptionPane.showMessageDialog(null,
+			        	          "Erreur: Entrez un nombre supérieur à 0 et inférieur à 7", "Erreur",
+			        	          JOptionPane.ERROR_MESSAGE);
+			        }
+				}
+		});
 		txtRangee.setBounds(98, 128, 113, 20);
 		panel.add(txtRangee);
 		txtRangee.setColumns(10);
 		
-		JLabel lblPresentation = new JLabel("Presentation :");
+		JLabel lblPresentation = new JLabel("Presentation* :");
 		lblPresentation.setBounds(6, 45, 89, 14);
 		panel.add(lblPresentation);
 		
@@ -294,6 +367,18 @@ public class App extends JFrame {
 		panel.add(lblNewLabel_3);
 		
 		cbEtat = new JComboBox();
+		cbEtat.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+		        if(cbEtat.getModel().getSelectedItem() == "Acquis")
+		        {
+		        	txtPersonne.setEnabled(false);
+		        }
+		        else
+		        {
+		        	txtPersonne.setEnabled(true);
+		        }
+		    }
+		});
 		cbEtat.setModel(new DefaultComboBoxModel(new String[] {"Pr\u00EAt\u00E9", "Emprunt\u00E9", "Acquis"}));
 		cbEtat.setBounds(98, 183, 113, 22);
 		panel.add(cbEtat);
@@ -322,6 +407,13 @@ public class App extends JFrame {
 				if(result == JFileChooser.APPROVE_OPTION)
 				{
 					File selectedFile = file.getSelectedFile();
+					if(!selectedFile.getName().endsWith("xml")
+							|| !selectedFile.getName().endsWith("xsd"))
+					{
+						JOptionPane.showMessageDialog(null,
+			        	          "Erreur: Seulement les fichiers xml ou xsd sont acceptés", "Erreur",
+			        	          JOptionPane.ERROR_MESSAGE);
+					}
 					XmlUtils xml = new XmlUtils();
 					List<Bibliotheque.Livre> livres = null;
 					try {
@@ -419,7 +511,7 @@ public class App extends JFrame {
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
-		lblAuteur = new JLabel("Nom :");
+		lblAuteur = new JLabel("Nom* :");
 		lblAuteur.setBounds(10, 16, 56, 14);
 		panel_1.add(lblAuteur);
 		
@@ -428,7 +520,7 @@ public class App extends JFrame {
 		panel_1.add(txtNom);
 		txtNom.setColumns(10);
 		
-		JLabel lblPrenom = new JLabel("Prenom :");
+		JLabel lblPrenom = new JLabel("Prenom* :");
 		lblPrenom.setBounds(10, 48, 66, 14);
 		panel_1.add(lblPrenom);
 		
@@ -445,6 +537,12 @@ public class App extends JFrame {
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				editselectedrow = biblio.getSelectedRow();
+				if(editselectedrow < 0)
+				{
+					JOptionPane.showMessageDialog(null,
+		        	          "Erreur: selectionnez une ligne", "Erreur",
+		        	          JOptionPane.ERROR_MESSAGE);
+				}
 				editbookid = tmodel.getValueAt(editselectedrow, 6).toString();
 				txtTitre.setText(tmodel.getValueAt(editselectedrow, 0).toString());
 				txtNom.setText(tmodel.getValueAt(editselectedrow, 1).toString().split(" ")[0]);
@@ -485,34 +583,50 @@ public class App extends JFrame {
 				String url = txtUrl.getText();
 				String etat = cbEtat.getModel().getSelectedItem().toString();
 				String personne = txtPersonne.getText();
-				
 				int myeditedrow = -1;
-				int z = tmodel.getRowCount();
-				for(int i = 0; i < z ; i++)
+				if(myeditedrow == -1)
 				{
-					if(tmodel.getValueAt(i, 6).toString().contains(editbookid))
-						myeditedrow = i;
+					JOptionPane.showMessageDialog(null,
+		        	          "Erreur: Vous n'avez pas choisi de ligne à éditer" , "Erreur",
+		        	          JOptionPane.ERROR_MESSAGE);
+				}else
+				{
+				if(titre.length() == 0 || presentation.length() == 0 || parution.length() == 0 || colonne.length() == 0
+						|| rangee.length() == 0 || nomAuteur.length() == 0 || prenomAuteur.length() == 0)
+				{
+					JOptionPane.showMessageDialog(null,
+		        	          "Erreur: Veuillez remplir tous les champs avec un asterisk" , "Erreur",
+		        	          JOptionPane.ERROR_MESSAGE);
 				}
-				tmodel.setValueAt(titre, myeditedrow, 0);
-				tmodel.setValueAt(nomAuteur+ " " +prenomAuteur, myeditedrow, 1);
-				tmodel.setValueAt(presentation, myeditedrow, 2);
-				tmodel.setValueAt(parution, myeditedrow, 3);
-				tmodel.setValueAt(colonne, myeditedrow, 4);
-				tmodel.setValueAt(rangee, myeditedrow, 5);
-				tmodel.setValueAt(url, myeditedrow, 7);
-				tmodel.setValueAt(etat, myeditedrow, 8);
-				tmodel.setValueAt(personne, myeditedrow, 9);
-				txtTitre.setText("");
-				txtPresentation.setText("");
-				txtParution.setText("");
-				txtColonne.setText("");
-				txtRangee.setText("");
-				txtNom.setText("");
-				txtPrenom.setText("");
-				txtUrl.setText("");
-				cbEtat.setSelectedIndex(0);
-				txtPersonne.setText("");
-				lblImage.setIcon(null);
+				else {
+					int z = tmodel.getRowCount();
+					for(int i = 0; i < z ; i++)
+					{
+						if(tmodel.getValueAt(i, 6).toString().contains(editbookid))
+							myeditedrow = i;
+					}
+					tmodel.setValueAt(titre, myeditedrow, 0);
+					tmodel.setValueAt(nomAuteur+ " " +prenomAuteur, myeditedrow, 1);
+					tmodel.setValueAt(presentation, myeditedrow, 2);
+					tmodel.setValueAt(parution, myeditedrow, 3);
+					tmodel.setValueAt(colonne, myeditedrow, 4);
+					tmodel.setValueAt(rangee, myeditedrow, 5);
+					tmodel.setValueAt(url, myeditedrow, 7);
+					tmodel.setValueAt(etat, myeditedrow, 8);
+					tmodel.setValueAt(personne, myeditedrow, 9);
+					txtTitre.setText("");
+					txtPresentation.setText("");
+					txtParution.setText("");
+					txtColonne.setText("");
+					txtRangee.setText("");
+					txtNom.setText("");
+					txtPrenom.setText("");
+					txtUrl.setText("");
+					cbEtat.setSelectedIndex(0);
+					txtPersonne.setText("");
+					lblImage.setIcon(null);
+				}
+				}
 			}
 		});
 		btnNewButton_3.setBounds(724, 43, 107, 23);
