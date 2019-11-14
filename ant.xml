@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project BiblioAgileJava with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
+    <!--ANT 1.7 is required-->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}"/>
+    <property name="dir.jarfile" value="${dir.workspace}/FIXE"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/final2.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="mainApp.App"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ javax.activation-1.2.0.jar jgoodies-common-1.8.0.jar jgoodies-forms-1.8.0.jar jaxb-api-2.3.0.jar poi-4.1.1.jar poi-ooxml-4.1.1.jar poi-ooxml-schemas-4.1.1.jar xmlbeans-3.1.0.jar curvesapi-1.06.jar commons-collections4-4.4.jar commons-compress-1.19.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="${dir.jarfile}/git/BiblioAgileJava/bin"/>
+            <zipfileset dir="C:/Program Files (x86)/java libraries" includes="javax.activation-1.2.0.jar"/>
+            <zipfileset dir="${dir.jarfile}/git/BiblioAgileJava" includes="jgoodies-common-1.8.0.jar"/>
+            <zipfileset dir="${dir.jarfile}/git/BiblioAgileJava" includes="jgoodies-forms-1.8.0.jar"/>
+            <zipfileset dir="C:/Program Files (x86)/java libraries" includes="jaxb-api-2.3.0.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1" includes="poi-4.1.1.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1" includes="poi-ooxml-4.1.1.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1" includes="poi-ooxml-schemas-4.1.1.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1/ooxml-lib" includes="xmlbeans-3.1.0.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1/ooxml-lib" includes="curvesapi-1.06.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1/lib" includes="commons-collections4-4.4.jar"/>
+            <zipfileset dir="C:/Users/Melih/Downloads/Compressed/poi-bin-4.1.1-20191023/poi-4.1.1/lib" includes="commons-compress-1.19.jar"/>
+        </jar>
+    </target>
+</project>
