@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
@@ -151,7 +153,8 @@ public class App extends JFrame {
 				String personne = txtPersonne.getText();
 				int bookID = tmodel.getRowCount() + 1;
 				if(titre.length() == 0 || presentation.length() == 0 || parution.length() == 0 || colonne.length() == 0
-						|| rangee.length() == 0 || nomAuteur.length() == 0 || prenomAuteur.length() == 0)
+						|| rangee.length() == 0 || nomAuteur.length() == 0 || prenomAuteur.length() == 0 
+						|| cbEtat.getModel().getSelectedItem() != "Acquis" && personne.length() == 0)
 				{
 					JOptionPane.showMessageDialog(null,
 		        	          "Erreur: Veuillez remplir tous les champs avec un asterisk" , "Erreur",
@@ -260,51 +263,39 @@ public class App extends JFrame {
 		panel.add(lblRange);
 		
 		txtParution = new JTextField();
-		txtParution.getDocument().addDocumentListener(new DocumentListener() {
-		  	  public void changedUpdate(DocumentEvent e) {
-			  	  criteria();
-			  }
-			  public void removeUpdate(DocumentEvent e) {
-				  criteria();
-			  }
-			  public void insertUpdate(DocumentEvent e) {
-				  criteria();
-			  }
-			  public void criteria() {
-				  int currentyear = Calendar.getInstance().get(Calendar.YEAR);
-					if(Integer.parseInt(txtParution.getText()) > currentyear)
-			        {
-			        	JOptionPane.showMessageDialog(null,
-			        	          "Erreur: Entrez une année inférieur à "+currentyear , "Erreur",
-			        	          JOptionPane.ERROR_MESSAGE);				        	
-			        }
-				}
-	});
+		txtParution.addKeyListener(new KeyAdapter() {
+		      public void keyReleased(KeyEvent e) {
+		        	if (!txtParution.getText().isEmpty()) {
+		        		int currentyear = Calendar.getInstance().get(Calendar.YEAR);
+						if(Integer.parseInt(txtParution.getText()) > currentyear)
+				        {
+				        	JOptionPane.showMessageDialog(null,
+				        	          "Erreur: Entrez une année inférieur à "+currentyear , "Erreur",
+				        	          JOptionPane.ERROR_MESSAGE);
+				        	txtParution.setText("");
+				        }
+					}
+		        }
+		      });
+		
 		txtParution.setBounds(98, 72, 113, 20);
 		panel.add(txtParution);
 		txtParution.setColumns(10);
 		
 		txtColonne = new JTextField();
 		txtColonne.setToolTipText("Entrez un nombre supérieur à 0 et inférieur à 7");
-		txtColonne.getDocument().addDocumentListener(new DocumentListener() {
-			  	  public void changedUpdate(DocumentEvent e) {
-				  	  criteria();
-				  }
-				  public void removeUpdate(DocumentEvent e) {
-					  criteria();
-				  }
-				  public void insertUpdate(DocumentEvent e) {
-					  criteria();
-				  }
-				  public void criteria() {
-						if(Integer.parseInt(txtColonne.getText()) < 0 || Integer.parseInt(txtColonne.getText()) > 6)
-				        {
-				        	JOptionPane.showMessageDialog(null,
-				        	          "Erreur: Entrez un nombre supérieur à 0 et inférieur à 7", "Erreur",
-				        	          JOptionPane.ERROR_MESSAGE);				        	
-				        }
+		txtColonne.addKeyListener(new KeyAdapter() {
+		      public void keyReleased(KeyEvent e) {
+		        	if (!txtColonne.getText().isEmpty()) {
+						if (Integer.parseInt(txtColonne.getText()) < 0 || Integer.parseInt(txtColonne.getText()) > 6) {
+							JOptionPane.showMessageDialog(null,
+									"Erreur: Entrez un nombre supérieur à 0 et inférieur à 7", "Erreur",
+									JOptionPane.ERROR_MESSAGE);
+							txtColonne.setText("");
+						} 
 					}
-		});
+		        }
+		      });
 		
 		txtColonne.setBounds(98, 97, 113, 20);
 		panel.add(txtColonne);
@@ -312,25 +303,20 @@ public class App extends JFrame {
 		
 		txtRangee = new JTextField();
 		txtRangee.setToolTipText("Entrez un nombre supérieur à 0 et inférieur à 7");
-		txtRangee.getDocument().addDocumentListener(new DocumentListener() {
-		  	  public void changedUpdate(DocumentEvent e) {
-			  	  //criteria();
-			  }
-			  public void removeUpdate(DocumentEvent e) {
-				  
-			  }
-			  public void insertUpdate(DocumentEvent e) {
-				  criteria();
-			  }
-			  public void criteria() {
-					if(Integer.parseInt(txtRangee.getText()) < 0 || Integer.parseInt(txtRangee.getText()) > 6)
-			        {
-			        	JOptionPane.showMessageDialog(null,
-			        	          "Erreur: Entrez un nombre supérieur à 0 et inférieur à 7", "Erreur",
-			        	          JOptionPane.ERROR_MESSAGE);
-			        }
-				}
-		});
+		
+		txtRangee.addKeyListener(new KeyAdapter() {
+		      public void keyReleased(KeyEvent e) {
+		        	if (!txtRangee.getText().isEmpty()) {
+						if (Integer.parseInt(txtRangee.getText()) < 0 || Integer.parseInt(txtRangee.getText()) > 6) {
+							JOptionPane.showMessageDialog(null,
+									"Erreur: Entrez un nombre supérieur à 0 et inférieur à 7", "Erreur",
+									JOptionPane.ERROR_MESSAGE);
+							txtRangee.setText("");
+						} 
+					}
+		        }
+		      });
+		    
 		txtRangee.setBounds(98, 128, 113, 20);
 		panel.add(txtRangee);
 		txtRangee.setColumns(10);
