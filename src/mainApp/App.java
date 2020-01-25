@@ -14,6 +14,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.RowSorter;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -37,12 +39,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.Document;
 import javax.xml.bind.JAXBException;
 
@@ -104,26 +109,28 @@ public class App extends JFrame {
 	private JTextField txtUrl;
 	private JTextField txtPersonne;
 	private JComboBox cbEtat;
+	private JTextField txtSearch;
+	private JLabel lblSearch;
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					App frame = new App();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					App frame = new App();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
 	 */
-	public App() {
+	public App(Credential.User user) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 754, 630);
 		contentPane = new JPanel();
@@ -133,6 +140,7 @@ public class App extends JFrame {
 		contentPane.setLayout(null);
 		
 		JButton btnNewButton = new JButton("Ajouter");
+		btnNewButton.setEnabled(user.role.right.create);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String titre = txtTitre.getText();
@@ -175,6 +183,7 @@ public class App extends JFrame {
 		contentPane.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Supprimer");
+		btnNewButton_1.setEnabled(user.role.right.delete);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				tmodel.removeRow(biblio.getSelectedRow());
@@ -184,7 +193,6 @@ public class App extends JFrame {
 		contentPane.add(btnNewButton_1);
 		tmodel = new DefaultTableModel(
 				new Object[][] {
-					{"cand", "zola emile", "un livre", "1986", "4", "5", 0, "https://www.babelio.com/couv/CVT_Germinal_4755.jpeg", "Acquis", ""}
 				},
 				new String[] {
 					"Titre", "Auteur", "Presentation", "Parution", "Colonne", "Rang\u00E9e", "BookID", "Url", "Etat", "Personne"
@@ -230,6 +238,7 @@ public class App extends JFrame {
 		panel.add(lblNewLabel);
 		
 		txtTitre = new JTextField();
+		txtTitre.setEnabled(user.role.right.edit);
 		txtTitre.setBounds(126, 26, 184, 18);
 		panel.add(txtTitre);
 		txtTitre.setColumns(10);
@@ -247,16 +256,19 @@ public class App extends JFrame {
 		panel.add(lblRange);
 		
 		txtParution = new JTextField();
+		txtParution.setEnabled(user.role.right.edit);
 		txtParution.setBounds(126, 97, 184, 20);
 		panel.add(txtParution);
 		txtParution.setColumns(10);
 		
 		txtColonne = new JTextField();
+		txtColonne.setEnabled(user.role.right.edit);
 		txtColonne.setBounds(126, 131, 184, 20);
 		panel.add(txtColonne);
 		txtColonne.setColumns(10);
 		
 		txtRangee = new JTextField();
+		txtRangee.setEnabled(user.role.right.edit);
 		txtRangee.setBounds(126, 167, 184, 20);
 		panel.add(txtRangee);
 		txtRangee.setColumns(10);
@@ -266,6 +278,7 @@ public class App extends JFrame {
 		panel.add(lblPresentation);
 		
 		txtPresentation = new JTextField();
+		txtPresentation.setEnabled(user.role.right.edit);
 		txtPresentation.setBounds(126, 61, 184, 20);
 		panel.add(txtPresentation);
 		txtPresentation.setColumns(10);
@@ -275,11 +288,13 @@ public class App extends JFrame {
 		panel.add(lblEtat);
 		
 		txtUrl = new JTextField();
+		txtUrl.setEnabled(user.role.right.edit);
 		txtUrl.setBounds(126, 203, 184, 20);
 		panel.add(txtUrl);
 		txtUrl.setColumns(10);
 		
 		txtPersonne = new JTextField();
+		txtPersonne.setEnabled(user.role.right.edit);
 		txtPersonne.setBounds(126, 277, 184, 20);
 		panel.add(txtPersonne);
 		txtPersonne.setColumns(10);
@@ -293,6 +308,7 @@ public class App extends JFrame {
 		panel.add(lblNewLabel_3);
 		
 		cbEtat = new JComboBox();
+		cbEtat.setEnabled(user.role.right.edit);
 		cbEtat.setModel(new DefaultComboBoxModel(new String[] {"Pr\u00EAt\u00E9", "Emprunt\u00E9", "Acquis"}));
 		cbEtat.setBounds(126, 239, 184, 22);
 		panel.add(cbEtat);
@@ -305,6 +321,7 @@ public class App extends JFrame {
 		menuBar.add(mnFichier);
 		
 		mntmOuvrir = new JMenuItem("Ouvrir");
+		mntmOuvrir.setEnabled(user.role.right.read);
 		mntmOuvrir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser file = new JFileChooser();
@@ -344,175 +361,10 @@ public class App extends JFrame {
 				}
 			}
 		});
-		mnFichier.add(mntmFermer);
 		
-		mntmQuitter = new JMenuItem("Quitter");
-		mntmQuitter.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		mnFichier.add(mntmQuitter);
-		
-		mnEdition = new JMenu("Edition");
-		menuBar.add(mnEdition);
-		
-		mntmSave = new JMenuItem("Save");
-		mntmSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				XmlUtils xml = new XmlUtils();
-				Object[][] allvalues = getTableData(biblio);
-				try {
-					xml.testObjectToXml(allvalues);
-				} catch (FileNotFoundException | JAXBException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		mnEdition.add(mntmSave);
-		
-		mntmSaveAs = new JMenuItem("Save as");
-		mntmSaveAs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileC = new JFileChooser();
-				if (fileC.showSaveDialog(contentPane) == JFileChooser.APPROVE_OPTION) {
-					File file = fileC.getSelectedFile();
-					XmlUtils xml = new XmlUtils();
-					Object[][] allvalues = getTableData(biblio);
-					try {
-						xml.testObjectToXml(allvalues,file);
-					} catch (FileNotFoundException | JAXBException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-			    }
-				
-			}
-		});
-		mnEdition.add(mntmSaveAs);
-		
-		JMenu mnPropos = new JMenu("\u00C0 propos");
-		menuBar.add(mnPropos);
-		
-		JMenuItem mntmInfos = new JMenuItem("Infos");
-		mntmInfos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(App.this,
-					    "Version : 1.0",
-					    "Infos",
-					    JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
-		mnPropos.add(mntmInfos);
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new TitledBorder(null, "Auteur", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_1.setBounds(367, 245, 330, 313);
-		contentPane.add(panel_1);
-		panel_1.setLayout(null);
-		
-		lblAuteur = new JLabel("Nom :");
-		lblAuteur.setBounds(10, 29, 56, 14);
-		panel_1.add(lblAuteur);
-		
-		txtNom = new JTextField();
-		txtNom.setBounds(91, 26, 229, 20);
-		panel_1.add(txtNom);
-		txtNom.setColumns(10);
-		
-		JLabel lblPrenom = new JLabel("Prenom :");
-		lblPrenom.setBounds(10, 61, 66, 14);
-		panel_1.add(lblPrenom);
-		
-		txtPrenom = new JTextField();
-		txtPrenom.setBounds(91, 58, 229, 20);
-		panel_1.add(txtPrenom);
-		txtPrenom.setColumns(10);
-		
-		JLabel lblImage = new JLabel("");
-		lblImage.setBounds(10, 91, 305, 209);
-		panel_1.add(lblImage);
-		
-		JButton btnNewButton_2 = new JButton("Editer");
-		btnNewButton_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				editselectedrow = biblio.getSelectedRow();
-				editbookid = tmodel.getValueAt(editselectedrow, 6).toString();
-				txtTitre.setText(tmodel.getValueAt(editselectedrow, 0).toString());
-				txtNom.setText(tmodel.getValueAt(editselectedrow, 1).toString().split(" ")[0]);
-				txtPrenom.setText(tmodel.getValueAt(editselectedrow, 1).toString().split(" ")[1]);
-				txtPresentation.setText(tmodel.getValueAt(editselectedrow, 2).toString());
-				txtParution.setText(tmodel.getValueAt(editselectedrow, 3).toString());
-				txtColonne.setText(tmodel.getValueAt(editselectedrow, 4).toString());
-				txtRangee.setText(tmodel.getValueAt(editselectedrow, 5).toString());
-				txtUrl.setText(tmodel.getValueAt(editselectedrow, 7).toString());
-				
-				
-				//img = img.getScaledInstance(150, 200, Image.SCALE_SMOOTH);
-				Icon icon;
-				try {
-					icon = new ImageIcon(new URL(txtUrl.getText()));
-					lblImage.setIcon(icon);
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				cbEtat.setSelectedItem(tmodel.getValueAt(editselectedrow, 8).toString());
-				txtPersonne.setText(tmodel.getValueAt(editselectedrow, 9).toString());
-			}
-		});
-		btnNewButton_2.setBounds(15, 45, 99, 23);
-		contentPane.add(btnNewButton_2);
-		
-		JButton btnNewButton_3 = new JButton("Enregistrer");
-		btnNewButton_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String titre = txtTitre.getText();
-				String presentation = txtPresentation.getText();
-				String parution = txtParution.getText();
-				String colonne = txtColonne.getText();
-				String rangee = txtRangee.getText();
-				String nomAuteur = txtNom.getText();
-				String prenomAuteur = txtPrenom.getText();
-				String url = txtUrl.getText();
-				String etat = cbEtat.getModel().getSelectedItem().toString();
-				String personne = txtPersonne.getText();
-				
-				int myeditedrow = -1;
-				int z = tmodel.getRowCount();
-				for(int i = 0; i < z ; i++)
-				{
-					if(tmodel.getValueAt(i, 6).toString().contains(editbookid))
-						myeditedrow = i;
-				}
-				tmodel.setValueAt(titre, myeditedrow, 0);
-				tmodel.setValueAt(nomAuteur+ " " +prenomAuteur, myeditedrow, 1);
-				tmodel.setValueAt(presentation, myeditedrow, 2);
-				tmodel.setValueAt(parution, myeditedrow, 3);
-				tmodel.setValueAt(colonne, myeditedrow, 4);
-				tmodel.setValueAt(rangee, myeditedrow, 5);
-				tmodel.setValueAt(url, myeditedrow, 7);
-				tmodel.setValueAt(etat, myeditedrow, 8);
-				tmodel.setValueAt(personne, myeditedrow, 9);
-				txtTitre.setText("");
-				txtPresentation.setText("");
-				txtParution.setText("");
-				txtColonne.setText("");
-				txtRangee.setText("");
-				txtNom.setText("");
-				txtPrenom.setText("");
-				txtUrl.setText("");
-				cbEtat.setSelectedIndex(0);
-				txtPersonne.setText("");
-				lblImage.setIcon(null);
-			}
-		});
-		btnNewButton_3.setBounds(132, 218, 114, 23);
-		contentPane.add(btnNewButton_3);
-		
-		JButton btnNewButton_4 = new JButton("Export");
-		btnNewButton_4.addActionListener(new ActionListener() {
+		JMenuItem mntmExport = new JMenuItem("Export");
+		mntmExport.setEnabled(user.role.right.export);
+		mntmExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				XWPFDocument document = new XWPFDocument();
 				//header
@@ -642,8 +494,217 @@ public class App extends JFrame {
 				}
 			}
 		});
-		btnNewButton_4.setBounds(608, 43, 89, 23);
-		contentPane.add(btnNewButton_4);
+		mnFichier.add(mntmExport);
+		mnFichier.add(mntmFermer);
+		
+		mntmQuitter = new JMenuItem("Quitter");
+		mntmQuitter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		mnFichier.add(mntmQuitter);
+		
+		mnEdition = new JMenu("Edition");
+		menuBar.add(mnEdition);
+		
+		mntmSave = new JMenuItem("Save");
+		mntmSave.setEnabled(user.role.right.save);
+		mntmSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				XmlUtils xml = new XmlUtils();
+				Object[][] allvalues = getTableData(biblio);
+				try {
+					xml.testObjectToXml(allvalues);
+				} catch (FileNotFoundException | JAXBException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		mnEdition.add(mntmSave);
+		
+		mntmSaveAs = new JMenuItem("Save as");
+		mntmSaveAs.setEnabled(user.role.right.save);
+		mntmSaveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileC = new JFileChooser();
+				if (fileC.showSaveDialog(contentPane) == JFileChooser.APPROVE_OPTION) {
+					File file = fileC.getSelectedFile();
+					XmlUtils xml = new XmlUtils();
+					Object[][] allvalues = getTableData(biblio);
+					try {
+						xml.testObjectToXml(allvalues,file);
+					} catch (FileNotFoundException | JAXBException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+			    }
+				
+			}
+		});
+		mnEdition.add(mntmSaveAs);
+		
+		JMenu mnPropos = new JMenu("\u00C0 propos");
+		menuBar.add(mnPropos);
+		
+		JMenuItem mntmInfos = new JMenuItem("Infos");
+		mntmInfos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(App.this,
+					    "Version : 1.0",
+					    "Infos",
+					    JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		mnPropos.add(mntmInfos);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, "Auteur", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.setBounds(367, 245, 330, 313);
+		contentPane.add(panel_1);
+		panel_1.setLayout(null);
+		
+		lblAuteur = new JLabel("Nom :");
+		lblAuteur.setBounds(10, 29, 56, 14);
+		panel_1.add(lblAuteur);
+		
+		txtNom = new JTextField();
+		txtNom.setEnabled(user.role.right.edit);
+		txtNom.setBounds(91, 26, 229, 20);
+		panel_1.add(txtNom);
+		txtNom.setColumns(10);
+		
+		JLabel lblPrenom = new JLabel("Prenom :");
+		lblPrenom.setBounds(10, 61, 66, 14);
+		panel_1.add(lblPrenom);
+		
+		txtPrenom = new JTextField();
+		txtPrenom.setEnabled(user.role.right.edit);
+		txtPrenom.setBounds(91, 58, 229, 20);
+		panel_1.add(txtPrenom);
+		txtPrenom.setColumns(10);
+		
+		JLabel lblImage = new JLabel("");
+		lblImage.setBounds(10, 91, 305, 209);
+		panel_1.add(lblImage);
+		
+		JButton btnNewButton_2 = new JButton("Editer");
+		btnNewButton_2.setEnabled(user.role.right.edit);
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editselectedrow = biblio.getSelectedRow();
+				editbookid = tmodel.getValueAt(editselectedrow, 6).toString();
+				txtTitre.setText(tmodel.getValueAt(editselectedrow, 0).toString());
+				txtNom.setText(tmodel.getValueAt(editselectedrow, 1).toString().split(" ")[0]);
+				txtPrenom.setText(tmodel.getValueAt(editselectedrow, 1).toString().split(" ")[1]);
+				txtPresentation.setText(tmodel.getValueAt(editselectedrow, 2).toString());
+				txtParution.setText(tmodel.getValueAt(editselectedrow, 3).toString());
+				txtColonne.setText(tmodel.getValueAt(editselectedrow, 4).toString());
+				txtRangee.setText(tmodel.getValueAt(editselectedrow, 5).toString());
+				txtUrl.setText(tmodel.getValueAt(editselectedrow, 7).toString());
+				
+				
+				//img = img.getScaledInstance(150, 200, Image.SCALE_SMOOTH);
+				Icon icon;
+				try {
+					icon = new ImageIcon(new URL(txtUrl.getText()));
+					lblImage.setIcon(icon);
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				cbEtat.setSelectedItem(tmodel.getValueAt(editselectedrow, 8).toString());
+				txtPersonne.setText(tmodel.getValueAt(editselectedrow, 9).toString());
+			}
+		});
+		btnNewButton_2.setBounds(15, 45, 99, 23);
+		contentPane.add(btnNewButton_2);
+		
+		JButton btnNewButton_3 = new JButton("Enregistrer");
+		btnNewButton_3.setEnabled(user.role.right.edit);
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String titre = txtTitre.getText();
+				String presentation = txtPresentation.getText();
+				String parution = txtParution.getText();
+				String colonne = txtColonne.getText();
+				String rangee = txtRangee.getText();
+				String nomAuteur = txtNom.getText();
+				String prenomAuteur = txtPrenom.getText();
+				String url = txtUrl.getText();
+				String etat = cbEtat.getModel().getSelectedItem().toString();
+				String personne = txtPersonne.getText();
+				
+				int myeditedrow = -1;
+				int z = tmodel.getRowCount();
+				for(int i = 0; i < z ; i++)
+				{
+					if(tmodel.getValueAt(i, 6).toString().contains(editbookid))
+						myeditedrow = i;
+				}
+				tmodel.setValueAt(titre, myeditedrow, 0);
+				tmodel.setValueAt(nomAuteur+ " " +prenomAuteur, myeditedrow, 1);
+				tmodel.setValueAt(presentation, myeditedrow, 2);
+				tmodel.setValueAt(parution, myeditedrow, 3);
+				tmodel.setValueAt(colonne, myeditedrow, 4);
+				tmodel.setValueAt(rangee, myeditedrow, 5);
+				tmodel.setValueAt(url, myeditedrow, 7);
+				tmodel.setValueAt(etat, myeditedrow, 8);
+				tmodel.setValueAt(personne, myeditedrow, 9);
+				txtTitre.setText("");
+				txtPresentation.setText("");
+				txtParution.setText("");
+				txtColonne.setText("");
+				txtRangee.setText("");
+				txtNom.setText("");
+				txtPrenom.setText("");
+				txtUrl.setText("");
+				cbEtat.setSelectedIndex(0);
+				txtPersonne.setText("");
+				lblImage.setIcon(null);
+			}
+		});
+		btnNewButton_3.setBounds(132, 218, 114, 23);
+		contentPane.add(btnNewButton_3);
+		
+		RowSorter<? extends TableModel> rs = biblio.getRowSorter();
+        if (rs == null) {
+        	biblio.setAutoCreateRowSorter(true);
+            rs = biblio.getRowSorter();
+        }
+
+        TableRowSorter<? extends TableModel> rowSorter =
+                (rs instanceof TableRowSorter) ? (TableRowSorter<? extends TableModel>) rs : null;
+
+		txtSearch = new JTextField();
+		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				searchBook();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				searchBook();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				searchBook();
+			}
+			public void searchBook()
+			{
+				if(txtSearch.getText().length() > 2) {
+					rowSorter.setRowFilter(RowFilter.regexFilter(txtSearch.getText()));
+				}
+				else {
+					rowSorter.setRowFilter(null);
+				}
+			}
+		});
+		txtSearch.setBounds(514, 43, 183, 26);
+		contentPane.add(txtSearch);
+		txtSearch.setColumns(10);
+		
+		lblSearch = new JLabel("Rechercher :");
+		lblSearch.setBounds(410, 46, 89, 20);
+		contentPane.add(lblSearch);
 		
 
 	}

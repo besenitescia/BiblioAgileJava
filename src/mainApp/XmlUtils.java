@@ -12,6 +12,38 @@ import javax.xml.bind.Unmarshaller;
 
 public class XmlUtils {
 	
+    public void CredentialToXml(Credential credential) throws JAXBException, FileNotFoundException {
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(Credential.class);
+
+        Marshaller marshaller = jaxbContext.createMarshaller();
+
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,true);
+
+        marshaller.marshal(credential, new File("credentials.xml"));
+
+        marshaller.marshal(credential, System.out);
+
+    }
+	
+	public Credential XmlToCredential() throws JAXBException, FileNotFoundException {
+		Credential cred = new Credential();
+    	
+        JAXBContext jaxbContext = JAXBContext.newInstance(Credential.class);
+
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        //unmarshaller.setSchema();
+        //unmarshaller.setValidating(true);
+        //unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        cred = (Credential)unmarshaller.unmarshal(new File("credentials.xml"));
+
+        //marshaller.marshal(cred, System.out);
+        
+        return cred;
+    }
+	
+	
     public Bibliotheque testXmlToObject(String filepath) throws JAXBException, FileNotFoundException {
     	Bibliotheque bibliotheque = new Bibliotheque();
     	

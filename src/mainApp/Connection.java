@@ -1,17 +1,25 @@
 package mainApp;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.xml.bind.JAXBException;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Connection extends JFrame {
 
@@ -48,21 +56,41 @@ public class Connection extends JFrame {
 		contentPane.setLayout(null);
 		
 		txtLogin = new JTextField();
-		txtLogin.setBounds(124, 61, 213, 38);
+		txtLogin.setBounds(88, 61, 278, 38);
 		contentPane.add(txtLogin);
 		txtLogin.setColumns(10);
 		
 		JButton btnLogin = new JButton("Se connecter");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String login = txtLogin.getText();
+				
+				String login = txtLogin.getText().toLowerCase();
 				char[] pwd = txtMdp.getPassword();
-				String password = pwd.toString();
-				
-				
+				String password = "";
+				for(char c : pwd) {
+					password += c;
+				}
+				XmlUtils xml = new XmlUtils();
+				List<Credential.User> users = null;
+				try {
+					users = xml.XmlToCredential().user;
+				} catch (FileNotFoundException | JAXBException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				if(users != null)
+				if(users.size() > 0)
+				for(Credential.User user : users)
+				{
+					if(user.login.equals(login) && user.password.equals(password)) {
+						App frame = new App(user);
+						frame.setVisible(true);
+						Connection.this.dispose();
+					}
+				}
 			}
 		});
-		btnLogin.setBounds(124, 233, 213, 38);
+		btnLogin.setBounds(88, 233, 278, 38);
 		contentPane.add(btnLogin);
 		
 		JLabel lblNewLabel = new JLabel("Identifiant");
@@ -73,16 +101,52 @@ public class Connection extends JFrame {
 		lblNewLabel_1.setBounds(182, 115, 106, 20);
 		contentPane.add(lblNewLabel_1);
 		
-		JLabel lblForgot = new JLabel("Mot de passe oubli\u00E9 ?");
+		JLabel lblForgot = new JLabel("<html><u style='color:blue'>Mot de passe oubli\u00E9 ?</u></html>");
+		lblForgot.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				PasswordForgot frame = new PasswordForgot();
+				frame.setVisible(true);
+				Connection.this.dispose();
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				Cursor cursor = new Cursor(Cursor.HAND_CURSOR);
+                Connection.this.setCursor(cursor);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+                Connection.this.setCursor(cursor);
+			}
+		});
 		lblForgot.setBounds(159, 188, 169, 20);
 		contentPane.add(lblForgot);
 		
-		JLabel lblRegister = new JLabel("Pas de compte ? S'inscrire");
+		JLabel lblRegister = new JLabel("<html><u style='color:blue'>Pas de compte ? S'inscrire</u></html>");
+		lblRegister.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Inscription frame = new Inscription();
+				frame.setVisible(true);
+				Connection.this.dispose();
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				Cursor cursor = new Cursor(Cursor.HAND_CURSOR);
+                Connection.this.setCursor(cursor);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+                Connection.this.setCursor(cursor);
+			}
+		});
 		lblRegister.setBounds(146, 300, 191, 20);
 		contentPane.add(lblRegister);
 		
 		txtMdp = new JPasswordField();
-		txtMdp.setBounds(124, 138, 213, 38);
+		txtMdp.setBounds(88, 138, 278, 38);
 		contentPane.add(txtMdp);
 	}
 }

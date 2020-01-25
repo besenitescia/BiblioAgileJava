@@ -6,11 +6,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -21,7 +18,6 @@ public class Bibliotheque {
 
     @XmlElement(required = true)
     protected List<Bibliotheque.Livre> livre;
-
     /**
      * Gets the value of the livre property.
      * 
@@ -50,8 +46,9 @@ public class Bibliotheque {
         }
         return this.livre;
     }
-
-
+    
+    
+    
     /**
      * <p>Classe Java pour anonymous complex type.
      * 
