@@ -104,7 +104,6 @@ public class App extends JFrame {
 	private JTextField txtUrl;
 	private JTextField txtPersonne;
 	private JComboBox cbEtat;
-	private JPanel panel_2;
 	/**
 	 * Launch the application.
 	 */
@@ -126,7 +125,7 @@ public class App extends JFrame {
 	 */
 	public App() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1295, 400);
+		setBounds(100, 100, 754, 630);
 		contentPane = new JPanel();
 		this.setTitle("BiblioAgileJava");
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -172,7 +171,7 @@ public class App extends JFrame {
 				txtPersonne.setText("");
 			}
 		});
-		btnNewButton.setBounds(610, 43, 99, 23);
+		btnNewButton.setBounds(15, 218, 99, 23);
 		contentPane.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Supprimer");
@@ -181,7 +180,7 @@ public class App extends JFrame {
 				tmodel.removeRow(biblio.getSelectedRow());
 			}
 		});
-		btnNewButton_1.setBounds(474, 43, 99, 23);
+		btnNewButton_1.setBounds(132, 45, 114, 23);
 		contentPane.add(btnNewButton_1);
 		tmodel = new DefaultTableModel(
 				new Object[][] {
@@ -205,7 +204,7 @@ public class App extends JFrame {
 		        Color whiteColor = Color.WHITE;
 		        if (!returnComp.getBackground().equals(getSelectionBackground())){
 		            Color bg = (row % 2 == 0 ? alternateColor : whiteColor);
-		            returnComp .setBackground(bg);
+		            returnComp.setBackground(bg);
 		            bg = null;
 		        }
 		        return returnComp;
@@ -214,7 +213,7 @@ public class App extends JFrame {
 		};
 		//biblio = new JTable(tmodel);
 		biblio.setBorder(new LineBorder(new Color(0, 0, 0)));
-		biblio.setBounds(27, 77, 546, 249);
+		biblio.setBounds(15, 77, 682, 125);
 		TableColumnModel tcm = biblio.getColumnModel();
 		tcm.removeColumn(tcm.getColumn(6));
 		contentPane.add(biblio,BorderLayout.CENTER);
@@ -222,80 +221,80 @@ public class App extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setToolTipText("");
 		panel.setBorder(new TitledBorder(null, "Livre", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(610, 71, 221, 249);
+		panel.setBounds(15, 245, 337, 313);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Titre :");
-		lblNewLabel.setBounds(6, 16, 82, 18);
+		lblNewLabel.setBounds(15, 26, 82, 18);
 		panel.add(lblNewLabel);
 		
 		txtTitre = new JTextField();
-		txtTitre.setBounds(98, 16, 113, 18);
+		txtTitre.setBounds(126, 26, 184, 18);
 		panel.add(txtTitre);
 		txtTitre.setColumns(10);
 		
 		lblAnne = new JLabel("Parution :");
-		lblAnne.setBounds(6, 75, 82, 14);
+		lblAnne.setBounds(15, 100, 82, 14);
 		panel.add(lblAnne);
 		
 		JLabel lblNewLabel_1 = new JLabel("Colonne :");
-		lblNewLabel_1.setBounds(6, 100, 82, 14);
+		lblNewLabel_1.setBounds(15, 134, 82, 14);
 		panel.add(lblNewLabel_1);
 		
 		lblRange = new JLabel("Rang\u00E9e :");
-		lblRange.setBounds(6, 131, 82, 14);
+		lblRange.setBounds(15, 170, 82, 14);
 		panel.add(lblRange);
 		
 		txtParution = new JTextField();
-		txtParution.setBounds(98, 72, 113, 20);
+		txtParution.setBounds(126, 97, 184, 20);
 		panel.add(txtParution);
 		txtParution.setColumns(10);
 		
 		txtColonne = new JTextField();
-		txtColonne.setBounds(98, 97, 113, 20);
+		txtColonne.setBounds(126, 131, 184, 20);
 		panel.add(txtColonne);
 		txtColonne.setColumns(10);
 		
 		txtRangee = new JTextField();
-		txtRangee.setBounds(98, 128, 113, 20);
+		txtRangee.setBounds(126, 167, 184, 20);
 		panel.add(txtRangee);
 		txtRangee.setColumns(10);
 		
 		JLabel lblPresentation = new JLabel("Presentation :");
-		lblPresentation.setBounds(6, 45, 89, 14);
+		lblPresentation.setBounds(16, 64, 113, 14);
 		panel.add(lblPresentation);
 		
 		txtPresentation = new JTextField();
-		txtPresentation.setBounds(98, 45, 114, 20);
+		txtPresentation.setBounds(126, 61, 184, 20);
 		panel.add(txtPresentation);
 		txtPresentation.setColumns(10);
 		
 		JLabel lblEtat = new JLabel("Etat :");
-		lblEtat.setBounds(6, 187, 48, 14);
+		lblEtat.setBounds(15, 243, 48, 14);
 		panel.add(lblEtat);
 		
 		txtUrl = new JTextField();
-		txtUrl.setBounds(98, 159, 113, 20);
+		txtUrl.setBounds(126, 203, 184, 20);
 		panel.add(txtUrl);
 		txtUrl.setColumns(10);
 		
 		txtPersonne = new JTextField();
-		txtPersonne.setBounds(98, 212, 113, 20);
+		txtPersonne.setBounds(126, 277, 184, 20);
 		panel.add(txtPersonne);
 		txtPersonne.setColumns(10);
 		
 		JLabel lblNewLabel_2 = new JLabel("Url :");
-		lblNewLabel_2.setBounds(6, 162, 48, 14);
+		lblNewLabel_2.setBounds(15, 206, 48, 14);
 		panel.add(lblNewLabel_2);
 		
 		JLabel lblNewLabel_3 = new JLabel("A qui :");
-		lblNewLabel_3.setBounds(6, 215, 48, 14);
+		lblNewLabel_3.setBounds(15, 280, 54, 14);
 		panel.add(lblNewLabel_3);
 		
 		cbEtat = new JComboBox();
 		cbEtat.setModel(new DefaultComboBoxModel(new String[] {"Pr\u00EAt\u00E9", "Emprunt\u00E9", "Acquis"}));
-		cbEtat.setBounds(98, 183, 113, 22);
+		cbEtat.setBounds(126, 239, 184, 22);
 		panel.add(cbEtat);
 		
 		menuBar = new JMenuBar();
@@ -304,12 +303,6 @@ public class App extends JFrame {
 		
 		mnFichier = new JMenu("Fichier");
 		menuBar.add(mnFichier);
-		
-		panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(null, "Couverture", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_2.setBounds(1053, 71, 202, 249);
-		contentPane.add(panel_2);
-		panel_2.setLayout(null);
 		
 		mntmOuvrir = new JMenuItem("Ouvrir");
 		mntmOuvrir.addActionListener(new ActionListener() {
@@ -415,31 +408,31 @@ public class App extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(null, "Auteur", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_1.setBounds(841, 71, 199, 249);
+		panel_1.setBounds(367, 245, 330, 313);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
 		lblAuteur = new JLabel("Nom :");
-		lblAuteur.setBounds(10, 16, 56, 14);
+		lblAuteur.setBounds(10, 29, 56, 14);
 		panel_1.add(lblAuteur);
 		
 		txtNom = new JTextField();
-		txtNom.setBounds(76, 13, 113, 20);
+		txtNom.setBounds(91, 26, 229, 20);
 		panel_1.add(txtNom);
 		txtNom.setColumns(10);
 		
 		JLabel lblPrenom = new JLabel("Prenom :");
-		lblPrenom.setBounds(10, 48, 66, 14);
+		lblPrenom.setBounds(10, 61, 66, 14);
 		panel_1.add(lblPrenom);
 		
 		txtPrenom = new JTextField();
-		txtPrenom.setBounds(76, 44, 113, 20);
+		txtPrenom.setBounds(91, 58, 229, 20);
 		panel_1.add(txtPrenom);
 		txtPrenom.setColumns(10);
 		
 		JLabel lblImage = new JLabel("");
-		lblImage.setBounds(10, 24, 180, 220);
-		panel_2.add(lblImage);
+		lblImage.setBounds(10, 91, 305, 209);
+		panel_1.add(lblImage);
 		
 		JButton btnNewButton_2 = new JButton("Editer");
 		btnNewButton_2.addActionListener(new ActionListener() {
@@ -469,7 +462,7 @@ public class App extends JFrame {
 				txtPersonne.setText(tmodel.getValueAt(editselectedrow, 9).toString());
 			}
 		});
-		btnNewButton_2.setBounds(347, 43, 99, 23);
+		btnNewButton_2.setBounds(15, 45, 99, 23);
 		contentPane.add(btnNewButton_2);
 		
 		JButton btnNewButton_3 = new JButton("Enregistrer");
@@ -515,7 +508,7 @@ public class App extends JFrame {
 				lblImage.setIcon(null);
 			}
 		});
-		btnNewButton_3.setBounds(724, 43, 107, 23);
+		btnNewButton_3.setBounds(132, 218, 114, 23);
 		contentPane.add(btnNewButton_3);
 		
 		JButton btnNewButton_4 = new JButton("Export");
@@ -649,7 +642,7 @@ public class App extends JFrame {
 				}
 			}
 		});
-		btnNewButton_4.setBounds(27, 43, 89, 23);
+		btnNewButton_4.setBounds(608, 43, 89, 23);
 		contentPane.add(btnNewButton_4);
 		
 
