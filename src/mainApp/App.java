@@ -1,29 +1,11 @@
 package mainApp;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.Image;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JTextArea;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
-import javax.swing.RowSorter;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JMenu;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,25 +16,40 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JTabbedPane;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.RowSorter;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.text.Document;
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.Borders;
@@ -68,19 +65,11 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
-import javax.swing.border.LineBorder;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
-import javax.swing.JList;
-import javax.swing.JComboBox;
-import javax.imageio.ImageIO;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
+
 
 public class App extends JFrame {
-
+	static Mylogger log = new Mylogger("C:\\Users\\Burak\\Desktop\\java\\");
+	
 	private JPanel contentPane;
 	private JTable biblio;
 	private JTextField txtTitre;
@@ -359,6 +348,7 @@ public class App extends JFrame {
 				{
 					tmodel.removeRow(0);
 				}
+				log.write(0, "file closed by " + user.role.description + " : " + user.login);
 			}
 		});
 		
@@ -492,6 +482,7 @@ public class App extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				log.write(0, "export done by " + user.role.description + " : " + user.login);
 			}
 		});
 		mnFichier.add(mntmExport);
@@ -520,6 +511,7 @@ public class App extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				log.write(0, "file saved by " + user.role.description + " : " + user.login);
 			}
 		});
 		mnEdition.add(mntmSave);
