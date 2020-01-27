@@ -34,10 +34,11 @@ public class Credential {
 	    "password",
 	    "mail",
 	    "disable",
-	    "role"
+	    "role",
+	    "credentialId"
 	})
 	public static class User {
-		@XmlElement(required = false)
+		@XmlElement(required = true)
 		public int userID;
 		@XmlElement(required = true)
 		public String login;
@@ -49,6 +50,8 @@ public class Credential {
 		public boolean disable;
 		@XmlElement(required = true)
 		public Credential.User.Role role;
+		@XmlElement(required = true)
+		public int credentialId;
 		
 		public User()
 		{
@@ -82,7 +85,7 @@ public class Credential {
 	        "right"
 	    })
 		public static class Role{
-			@XmlElement(required = false)
+			@XmlElement(required = true)
 			public int roleID;
 			@XmlElement(required = true)
 			public String code;
@@ -108,6 +111,7 @@ public class Credential {
 			
 			@XmlAccessorType(XmlAccessType.FIELD)
 		    @XmlType(name = "", propOrder = {
+		    	"rightId",
 		    	"edit",
 		        "read",
 		        "create",
@@ -116,6 +120,8 @@ public class Credential {
 		        "save"
 		    })
 			public static class Right{
+				@XmlElement(required = true)
+				public int rightId;
 				@XmlElement(required = true)
 				public boolean edit;
 				@XmlElement(required = true)

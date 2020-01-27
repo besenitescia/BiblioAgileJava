@@ -71,6 +71,7 @@ public class Connection extends JFrame {
 					password += c;
 				}
 				XmlUtils xml = new XmlUtils();
+				boolean isConnected = false;
 				List<Credential.User> users = null;
 				try {
 					users = xml.XmlToCredential().user;
@@ -83,10 +84,18 @@ public class Connection extends JFrame {
 				for(Credential.User user : users)
 				{
 					if(user.login.equals(login) && user.password.equals(password)) {
+						isConnected = true;
 						App frame = new App(user);
 						frame.setVisible(true);
 						Connection.this.dispose();
 					}
+				}
+				if(!isConnected)
+				{
+					JOptionPane.showMessageDialog(Connection.this,
+						    "Mot de passe ou login incorrect",
+						    "Erreur",
+						    JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		});

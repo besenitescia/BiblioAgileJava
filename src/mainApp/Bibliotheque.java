@@ -11,11 +11,18 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "livre"
+    "bibliothequeId"
+	,"nom"
+	,"livre"
 })
 @XmlRootElement(name = "bibliotheque")
 public class Bibliotheque {
-
+	@XmlElement(required = true)
+	public int bibliothequeId;
+	
+	@XmlElement(required = true)
+	public String nom;
+	
     @XmlElement(required = true)
     protected List<Bibliotheque.Livre> livre;
     /**
@@ -95,10 +102,11 @@ public class Bibliotheque {
         "rangee",
         "url",
         "etat",
-        "personne"
+        "personne",
+        "bibliothequeId"
     })
     public static class Livre {
-    	@XmlElement(required = false)
+    	@XmlElement(required = true)
     	public int bookID;// only for editing row
         @XmlElement(required = true)
         public String titre;
@@ -118,6 +126,8 @@ public class Bibliotheque {
         public String etat;
         @XmlElement(required = true)
         public String personne;
+        @XmlElement(required = true)
+        public int bibliothequeId;
         
         public Livre() {}
         
@@ -182,13 +192,18 @@ public class Bibliotheque {
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "nom",
+            "auteurId",
+    		"nom",
             "prenom"
         })
         public static class Auteur {
-
+        	
+        	@XmlElement(required = true)
+        	public int auteurId;
+        	
             @XmlElement(required = true)
             public String nom;
+            
             @XmlElement(required = true)
             public String prenom;
             
