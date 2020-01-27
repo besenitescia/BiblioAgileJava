@@ -7,10 +7,12 @@
         <xs:element maxOccurs="unbounded" name="livre">
           <xs:complexType>
             <xs:sequence>
+			  <xs:element name="livreId" type="xs:unsignedShort" />
               <xs:element name="titre" type="xs:string" />
               <xs:element name="auteur">
                 <xs:complexType>
                   <xs:sequence>
+					<xs:element name="auteurId" type="xs:unsignedShort" />
                     <xs:element name="nom" type="xs:string" />
                     <xs:element name="prenom" type="xs:string" />
                   </xs:sequence>
@@ -31,6 +33,7 @@
 				  </xs:complexType>
 			  </xs:element>
 			  <xs:element name="personne" type="xs:string" />
+			  <xs:element name="bibliothequeId" type="xs:unsignedShort" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

@@ -93,7 +93,7 @@ public class Bibliotheque {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-    	"bookID",
+    	"livreId",
         "titre",
         "auteur",
         "presentation",
@@ -106,7 +106,7 @@ public class Bibliotheque {
         "bibliothequeId"
     })
     public static class Livre {
-    	@XmlElement(required = true)
+    	@XmlElement(required = true, name ="livreId")
     	public int bookID;// only for editing row
         @XmlElement(required = true)
         public String titre;
