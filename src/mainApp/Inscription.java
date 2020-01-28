@@ -3,10 +3,15 @@ package mainApp;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.awt.Color;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.xml.bind.JAXBException;
 
 import dataAccess.User_dataAccess;
@@ -60,16 +65,59 @@ public class Inscription extends JFrame {
 		contentPane.setLayout(null);
 		
 		txtLogin = new JTextField();
+		JButton btnRegister = new JButton("S'inscrire");
+		txtLogin.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				checkLogin(txtLogin.getText());
+			}
+			public void removeUpdate(DocumentEvent e) {
+				checkLogin(txtLogin.getText());
+			}
+			public void insertUpdate(DocumentEvent e) {
+				checkLogin(txtLogin.getText());
+			}
+			public void checkLogin(String Login){
+				if(Login.indexOf(' ')!=-1 ){
+					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.gray, 0)));
+					btnRegister.setEnabled(false);
+				}
+				else {
+					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.RED, 1)));
+					btnRegister.setEnabled(true);
+				}
+			}
+		});
 		txtLogin.setBounds(213, 59, 209, 26);
 		contentPane.add(txtLogin);
 		txtLogin.setColumns(10);
 		
 		txtMail = new JTextField();
+		txtMail.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				checkMail(txtMail.getText());
+			}
+			public void removeUpdate(DocumentEvent e) {
+				checkMail(txtMail.getText());
+			}
+			public void insertUpdate(DocumentEvent e) {
+				checkMail(txtMail.getText());
+			}
+			public void checkMail(String mail){
+				if(mail.indexOf('@')!=-1 && mail.indexOf('.')!=-1 ){
+					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.gray, 0)));
+					btnRegister.setEnabled(true);
+				}
+				else {
+					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.RED, 1)));
+					btnRegister.setEnabled(false);
+				}
+			}
+		});
 		txtMail.setBounds(213, 183, 209, 26);
 		contentPane.add(txtMail);
 		txtMail.setColumns(10);
 		
-		JButton btnRegister = new JButton("S'inscrire");
+
 		btnRegister.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				XmlUtils xml = new XmlUtils();

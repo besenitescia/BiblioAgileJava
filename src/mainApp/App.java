@@ -561,6 +561,86 @@ public class App extends JFrame {
 						}
 						livresdb = Livre_dataAccess.getLivres();
 						//update or add books
+						boolean addTodb = false;
+						boolean addToxml = false;
+						boolean elementDontExists = false;
+						if(livresdb.size() > livres.size())
+							addToxml = true;
+						if(livresdb.size() < livres.size())
+							addTodb = true;
+						if(addToxml)
+						{
+							for(Bibliotheque.Livre bookdb : livresdb)
+							{
+								elementDontExists = false;
+								for(Bibliotheque.Livre bookxml : livres)
+								{
+									if(bookxml.titre.equals(bookdb.titre))
+									{
+										bookxml.bookID = bookdb.bookID;
+										bookxml.titre = bookdb.titre;
+										bookxml.presentation = bookdb.presentation;
+										bookxml.colonne = bookdb.colonne;
+										bookxml.parution = bookdb.parution;
+										bookxml.rangee = bookdb.rangee;
+										bookxml.url = bookdb.url;
+										bookxml.personne = bookdb.personne;
+										bookxml.bibliothequeId = bookdb.bibliothequeId;
+										if(bookxml.auteur == null)
+											bookxml.auteur = new Bibliotheque.Livre.Auteur();
+										bookxml.auteur.auteurId = bookdb.auteur.auteurId;
+										bookxml.auteur.nom = bookdb.auteur.nom;
+										bookxml.auteur.prenom = bookdb.auteur.prenom;
+									}
+									else
+									{
+										elementDontExists = true;
+									}
+								}
+								if(elementDontExists)
+								{
+									livres.add(bookdb);
+								}
+							}
+						}
+						if(addTodb) {
+							for(Bibliotheque.Livre bookxml : livres)
+							{
+								elementDontExists = false;
+								for(Bibliotheque.Livre bookdb : livresdb)
+								{
+									if(bookxml.titre.equals(bookdb.titre))
+									{
+										bookdb.titre = bookxml.titre;
+										bookdb.presentation = bookxml.presentation;
+										bookdb.colonne = bookxml.colonne;
+										bookdb.parution = bookxml.parution;
+										bookdb.rangee = bookxml.rangee;
+										bookdb.url = bookxml.url;
+										bookdb.personne = bookxml.personne;
+										bookdb.bibliothequeId = bookxml.bibliothequeId;
+										if(bookdb.auteur == null)
+											bookdb.auteur = new Bibliotheque.Livre.Auteur();
+										bookdb.auteur.auteurId = bookxml.auteur.auteurId;
+										bookdb.auteur.nom = bookxml.auteur.nom;
+										bookdb.auteur.prenom = bookxml.auteur.prenom;
+										Auteur_dataAccess.updateAuteur(bookdb.auteur.auteurId, bookdb.auteur.nom, bookdb.auteur.prenom);
+										Livre_dataAccess.updateLivre(bookdb.bookID, bookdb.titre, bookdb.presentation,
+												Integer.parseInt(bookdb.parution), Integer.parseInt(bookdb.colonne), Integer.parseInt(bookdb.rangee),
+												bookdb.url, bookdb.etat, bookdb.personne, bookdb.bibliothequeId, bookxml.auteur.auteurId);
+									}
+								}
+								if(elementDontExists)
+								{
+									livresdb.add(bookxml);
+									int auteurid = Auteur_dataAccess.insertAuteur(bookxml.auteur.nom, bookxml.auteur.prenom);
+									Livre_dataAccess.insertLivre(bookxml.titre, bookxml.presentation, 
+											Integer.parseInt(bookxml.parution), Integer.parseInt(bookxml.colonne), Integer.parseInt(bookxml.rangee),
+											bookxml.url, bookxml.etat, bookxml.personne,
+											bookxml.bibliothequeId, auteurid);
+								}
+							}
+						}
 						//update or add users
 						xmlOpened = true;
 					}
@@ -651,10 +731,8 @@ public class App extends JFrame {
 		JMenuItem mntmInfos = new JMenuItem("Infos");
 		mntmInfos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(App.this,
-					    "Version : 1.0",
-					    "Infos",
-					    JOptionPane.INFORMATION_MESSAGE);
+				About frame = new About();
+				frame.setVisible(true);
 			}
 		});
 		mnPropos.add(mntmInfos);
