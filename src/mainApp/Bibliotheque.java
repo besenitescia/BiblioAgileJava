@@ -106,8 +106,8 @@ public class Bibliotheque {
         "bibliothequeId"
     })
     public static class Livre {
-    	@XmlElement(required = true, name ="livreId")
-    	public int bookID;// only for editing row
+    	@XmlElement(required = true)
+    	public int livreId;// only for editing row
         @XmlElement(required = true)
         public String titre;
         @XmlElement(required = true)
@@ -132,7 +132,7 @@ public class Bibliotheque {
         public Livre() {}
         
     	public Livre (int bookID, Auteur auteur, String titre, String presentation, String parution, String colonne, String rangee, String url, String etat, String personne) {
-    		this.bookID = bookID;
+    		this.livreId = bookID;
     		this.auteur = auteur;
     		this.titre = titre;
     		this.presentation = presentation;
@@ -164,7 +164,7 @@ public class Bibliotheque {
     			this.parution,
     			this.colonne,
     			this.rangee,
-    			String.valueOf(this.bookID),
+    			String.valueOf(this.livreId),
     			this.url,
     			this.etat,
     			this.personne

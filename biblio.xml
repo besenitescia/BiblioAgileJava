@@ -1,18 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<bibliotheque>
-    <livre>
-        <bookID>0</bookID>
-        <titre>cand</titre>
-        <auteur>
-            <nom>zola</nom>
-            <prenom>emile</prenom>
-        </auteur>
-        <presentation>un livre</presentation>
-        <parution>1986</parution>
-        <colonne>4</colonne>
-        <rangee>5</rangee>
-        <url>https://www.babelio.com/couv/CVT_Germinal_4755.jpeg</url>
-        <etat>Acquis</etat>
-        <personne></personne>
-    </livre>
-</bibliotheque>
+<bibliotheque/>

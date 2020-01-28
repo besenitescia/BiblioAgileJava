@@ -3,11 +3,12 @@ begin
 	DROP PROCEDURE [SP_InsertOrUpdateAuteur]
 end
 GO
+--exec [SP_InsertOrUpdateAuteur] 0,'Burak','Esen'
 CREATE PROCEDURE [SP_InsertOrUpdateAuteur]
 (
-	@AuteurId int null,
 	@Prenom nvarchar(255) null,
-	@Nom nvarchar(255) null
+	@Nom nvarchar(255) null,
+	@AuteurId int null
 )
 as
 begin
@@ -19,7 +20,6 @@ begin
 		values	(@Prenom
 				,@Nom)
 		set @AuteurId = SCOPE_IDENTITY()
-		select @AuteurId
 	end
 	ELSE
 	BEGIN
@@ -29,5 +29,10 @@ begin
 		WHERE [AuteurId] = @AuteurId
 
 	END
+
+	select [AuteurId] 
+	from [dbo].[Auteur]
+	where [Nom] = @Nom
+	and [Prenom] = @Prenom
 end
 go

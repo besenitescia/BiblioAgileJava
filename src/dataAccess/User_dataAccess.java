@@ -26,7 +26,7 @@ public class User_dataAccess {
 					user.password = rs.getString("Password");
 					user.mail = rs.getString("Mail");
 					user.userID = Integer.parseInt(rs.getString("UserId"));
-					user.disable = Boolean.parseBoolean(rs.getString("Disable"));
+					user.disable = rs.getBoolean("Disable");
 					user.credentialId = Integer.parseInt(rs.getString("CredentialId"));
 					Credential.User.Role role = new Credential.User.Role();
 					role.roleID = Integer.parseInt(rs.getString("RoleId"));
@@ -34,12 +34,12 @@ public class User_dataAccess {
 					role.description = rs.getString("Description");
 					Credential.User.Role.Right right = new Credential.User.Role.Right();
 					right.rightId = Integer.parseInt(rs.getString("RightId"));
-					right.create = Boolean.parseBoolean(rs.getString("Create"));
-					right.read = Boolean.parseBoolean(rs.getString("Read"));
-					right.delete = Boolean.parseBoolean(rs.getString("Delete"));
-					right.edit = Boolean.parseBoolean(rs.getString("Edit"));
-					right.export = Boolean.parseBoolean(rs.getString("Export"));
-					right.save = Boolean.parseBoolean(rs.getString("Save"));
+					right.create = rs.getBoolean("Create");
+					right.read = rs.getBoolean("Read");
+					right.delete = rs.getBoolean("Delete");
+					right.edit = rs.getBoolean("Edit");
+					right.export =rs.getBoolean("Export");
+					right.save = rs.getBoolean("Save");
 					role.right = right;
 					user.role = role;
 					users.add(user);
@@ -67,7 +67,7 @@ public class User_dataAccess {
 					user.password = rs.getString("Password");
 					user.mail = rs.getString("Mail");
 					user.userID = Integer.parseInt(rs.getString("UserId"));
-					user.disable = Boolean.parseBoolean(rs.getString("Disable"));
+					user.disable = rs.getBoolean("Disable");
 					user.credentialId = Integer.parseInt(rs.getString("CredentialId"));
 					Credential.User.Role role = new Credential.User.Role();
 					role.roleID = Integer.parseInt(rs.getString("RoleId"));
@@ -75,12 +75,13 @@ public class User_dataAccess {
 					role.description = rs.getString("Description");
 					Credential.User.Role.Right right = new Credential.User.Role.Right();
 					right.rightId = Integer.parseInt(rs.getString("RightId"));
-					right.create = Boolean.parseBoolean(rs.getString("Create"));
-					right.read = Boolean.parseBoolean(rs.getString("Read"));
-					right.delete = Boolean.parseBoolean(rs.getString("Delete"));
-					right.edit = Boolean.parseBoolean(rs.getString("Edit"));
-					right.export = Boolean.parseBoolean(rs.getString("Export"));
-					right.save = Boolean.parseBoolean(rs.getString("Save"));
+					
+					right.create = rs.getBoolean("Create");
+					right.read = rs.getBoolean("Read");
+					right.delete = rs.getBoolean("Delete");
+					right.edit = rs.getBoolean("Edit");
+					right.export =rs.getBoolean("Export");
+					right.save = rs.getBoolean("Save");
 					role.right = right;
 					user.role = role;
 					users.add(user);
@@ -109,7 +110,7 @@ public class User_dataAccess {
 					user.password = rs.getString("Password");
 					user.mail = rs.getString("Mail");
 					user.userID = Integer.parseInt(rs.getString("UserId"));
-					user.disable = Boolean.parseBoolean(rs.getString("Disable"));
+					user.disable = rs.getBoolean("Disable");
 					user.credentialId = Integer.parseInt(rs.getString("CredentialId"));
 					Credential.User.Role role = new Credential.User.Role();
 					role.roleID = Integer.parseInt(rs.getString("RoleId"));
@@ -117,12 +118,13 @@ public class User_dataAccess {
 					role.description = rs.getString("Description");
 					Credential.User.Role.Right right = new Credential.User.Role.Right();
 					right.rightId = Integer.parseInt(rs.getString("RightId"));
-					right.create = Boolean.parseBoolean(rs.getString("Create"));
-					right.read = Boolean.parseBoolean(rs.getString("Read"));
-					right.delete = Boolean.parseBoolean(rs.getString("Delete"));
-					right.edit = Boolean.parseBoolean(rs.getString("Edit"));
-					right.export = Boolean.parseBoolean(rs.getString("Export"));
-					right.save = Boolean.parseBoolean(rs.getString("Save"));
+					
+					right.create = rs.getBoolean("Create");
+					right.read = rs.getBoolean("Read");
+					right.delete = rs.getBoolean("Delete");
+					right.edit = rs.getBoolean("Edit");
+					right.export =rs.getBoolean("Export");
+					right.save = rs.getBoolean("Save");
 					role.right = right;
 					user.role = role;
 					users.add(user);
@@ -154,7 +156,7 @@ public class User_dataAccess {
 					user.password = rs.getString("Password");
 					user.mail = rs.getString("Mail");
 					user.userID = Integer.parseInt(rs.getString("UserId"));
-					user.disable = Boolean.parseBoolean(rs.getString("Disable"));
+					user.disable = rs.getBoolean("Disable");
 					user.credentialId = Integer.parseInt(rs.getString("CredentialId"));
 					Credential.User.Role role = new Credential.User.Role();
 					role.roleID = Integer.parseInt(rs.getString("RoleId"));
@@ -162,12 +164,13 @@ public class User_dataAccess {
 					role.description = rs.getString("Description");
 					Credential.User.Role.Right right = new Credential.User.Role.Right();
 					right.rightId = Integer.parseInt(rs.getString("RightId"));
-					right.create = Boolean.parseBoolean(rs.getString("Create"));
-					right.read = Boolean.parseBoolean(rs.getString("Read"));
-					right.delete = Boolean.parseBoolean(rs.getString("Delete"));
-					right.edit = Boolean.parseBoolean(rs.getString("Edit"));
-					right.export = Boolean.parseBoolean(rs.getString("Export"));
-					right.save = Boolean.parseBoolean(rs.getString("Save"));
+					
+					right.create = rs.getBoolean("Create");
+					right.read = rs.getBoolean("Read");
+					right.delete = rs.getBoolean("Delete");
+					right.edit = rs.getBoolean("Edit");
+					right.export =rs.getBoolean("Export");
+					right.save = rs.getBoolean("Save");
 					role.right = right;
 					user.role = role;
 					users.add(user);
@@ -184,8 +187,9 @@ public class User_dataAccess {
 		String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=Baj;integratedSecurity=true";
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
-					.prepareCall("{call SP_InsertRole(?,?,?,?,?,?)}")) {
+					.prepareCall("{call SP_InsertOrUpdateUser(?,?,?,?,?,?,?)}")) {
 				
+				cstmt.setString("userid","0");
 				cstmt.setString("login",login);
 				cstmt.setString("password",password);
 				cstmt.setString("mail",mail);
@@ -205,7 +209,7 @@ public class User_dataAccess {
 		String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=Baj;integratedSecurity=true";
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
-					.prepareCall("{call SP_InsertRole(?,?,?,?,?,?)}")) {
+					.prepareCall("{call SP_InsertOrUpdateUser(?,?,?,?,?,?,?)}")) {
 				
 				cstmt.setString("userid",String.valueOf(userid));
 				cstmt.setString("login",login);
@@ -213,7 +217,7 @@ public class User_dataAccess {
 				cstmt.setString("mail",mail);
 				cstmt.setString("roleid",String.valueOf(roleid));
 				cstmt.setString("credentialid",String.valueOf(credentialid));
-				cstmt.setString("disable",String.valueOf(disable));
+				cstmt.setBoolean("disable",disable);
 	
 				cstmt.execute();
 			}

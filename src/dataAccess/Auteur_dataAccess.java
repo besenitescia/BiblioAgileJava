@@ -42,15 +42,25 @@ public class Auteur_dataAccess {
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
 					.prepareCall("{call SP_InsertOrUpdateAuteur(?,?,?)}")) {
-				
+				cstmt.setInt("AuteurId",0);
 				cstmt.setString("Prenom",nom);
 				cstmt.setString("Nom",prenom);
-	
+				
 				cstmt.execute();
+				
+			}
+		}
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
+			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
+					.prepareCall("{call SP_GetLastInsertedAuteur}")) {
+				
 				cstmt.execute();
 				ResultSet rs = cstmt.getResultSet();
 				while(rs.next()) {
-					auteurid = Integer.parseInt(rs.getString("AuteurId"));
+					auteurid = rs.getInt("AuteurId");
 				}
 			}
 		}
@@ -66,7 +76,7 @@ public class Auteur_dataAccess {
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
 					.prepareCall("{call SP_InsertOrUpdateAuteur(?,?,?)}")) {
-				cstmt.setString("AuteurId",String.valueOf(auteurId));
+				cstmt.setInt("AuteurId",auteurId);
 				cstmt.setString("Prenom",nom);
 				cstmt.setString("Nom",prenom);
 	

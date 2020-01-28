@@ -76,6 +76,7 @@ public class Connection extends JFrame {
 				}
 				XmlUtils xml = new XmlUtils();
 				boolean isConnected = false;
+				boolean isValid = false;
 				List<Credential.User> users = null;
 				try {
 					users = xml.XmlToCredential().user;
@@ -95,12 +96,15 @@ public class Connection extends JFrame {
 							App frame = new App(usersfromdb.get(0));
 							frame.setVisible(true);
 							Connection.this.dispose();
+							break;
 						}
 						else {
 							JOptionPane.showMessageDialog(Connection.this,
 								    "Votre compte n'a pas encore été activé.",
 								    "Erreur",
 								    JOptionPane.INFORMATION_MESSAGE);
+							isValid = false;
+							break;
 						}
 					}
 					if(user.login.equals(login) && user.password.equals(password)) {
@@ -109,10 +113,11 @@ public class Connection extends JFrame {
 							App frame = new App(user);
 							frame.setVisible(true);
 							Connection.this.dispose();
+							break;
 						}
 					}
 				}
-				if(!isConnected)
+				if(!isConnected && isValid)
 				{
 					JOptionPane.showMessageDialog(Connection.this,
 						    "Mot de passe ou login incorrect",

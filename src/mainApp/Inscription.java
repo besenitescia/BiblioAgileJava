@@ -78,11 +78,11 @@ public class Inscription extends JFrame {
 			}
 			public void checkLogin(String Login){
 				if(Login.indexOf(' ')!=-1 ){
-					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.gray, 0)));
+					txtLogin.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.red, 1)));
 					btnRegister.setEnabled(false);
 				}
 				else {
-					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.RED, 1)));
+					txtLogin.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.gray, 1)));
 					btnRegister.setEnabled(true);
 				}
 			}
@@ -104,7 +104,7 @@ public class Inscription extends JFrame {
 			}
 			public void checkMail(String mail){
 				if(mail.indexOf('@')!=-1 && mail.indexOf('.')!=-1 ){
-					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.gray, 0)));
+					txtMail.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.gray, 1)));
 					btnRegister.setEnabled(true);
 				}
 				else {

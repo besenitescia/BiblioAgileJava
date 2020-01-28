@@ -66,6 +66,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
 import dataAccess.Auteur_dataAccess;
 import dataAccess.Livre_dataAccess;
+import dataAccess.User_dataAccess;
 import mainApp.Bibliotheque.Livre;
 
 
@@ -151,7 +152,7 @@ public class App extends JFrame {
 				int bookID = tmodel.getRowCount() + 1;
 				Bibliotheque.Livre.Auteur auteur = new Bibliotheque.Livre.Auteur(nomAuteur,prenomAuteur);
 				Bibliotheque.Livre livre = new Bibliotheque.Livre();
-				livre.bookID = bookID;
+				livre.livreId = bookID;
 				livre.auteur = auteur;
 				livre.titre = titre;
 				livre.presentation = presentation;
@@ -173,8 +174,7 @@ public class App extends JFrame {
 				cbEtat.setSelectedIndex(0);
 				txtPersonne.setText("");
 				int auteurid = Auteur_dataAccess.insertAuteur(nomAuteur, prenomAuteur);
-				Livre_dataAccess.insertLivre(titre, presentation, Integer.parseInt(parution),
-						Integer.parseInt(colonne), Integer.parseInt(rangee), url, etat, personne, 1, auteurid);
+				Livre_dataAccess.insertLivre(titre, presentation, Integer.parseInt(parution), Integer.parseInt(colonne), Integer.parseInt(rangee), url, etat, personne, 1, auteurid);
 			}
 		});
 		btnNewButton.setBounds(15, 218, 99, 23);
@@ -184,8 +184,11 @@ public class App extends JFrame {
 		btnNewButton_1.setEnabled(user.role.right.delete);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int selectedrow = biblio.getSelectedRow();
+				String id = tmodel.getValueAt(selectedrow, 6).toString();
+				int lid = Integer.parseInt(id);
 				tmodel.removeRow(biblio.getSelectedRow());
-				Livre_dataAccess.deleteLivre(0);
+				Livre_dataAccess.deleteLivre(lid);
 			}
 		});
 		btnNewButton_1.setBounds(132, 45, 114, 23);
@@ -261,28 +264,6 @@ public class App extends JFrame {
 		txtParution.setColumns(10);
 		
 		txtColonne = new JTextField();
-		txtColonne.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				criteria();
-			}
-			public void removeUpdate(DocumentEvent e) {
-				criteria();
-			}
-			public void insertUpdate(DocumentEvent e) {
-				criteria();
-			}
-			public void criteria()
-			{
-				if(Integer.class.isInstance(Integer.parseInt(txtColonne.getText()))) {
-					if(Integer.parseInt(txtColonne.getText()) < 0 || Integer.parseInt(txtColonne.getText()) > 5) {
-						// bordure rouge + message
-					
-						txtColonne.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.red, 1)));
-					}
-				}
-				
-			}
-		});
 		txtColonne.setEnabled(user.role.right.edit);
 		txtColonne.setBounds(126, 131, 184, 20);
 		panel.add(txtColonne);
@@ -530,7 +511,29 @@ public class App extends JFrame {
 			}
 		});
 		
+		JMenuItem mntmDisconnect = new JMenuItem("Se d\u00E9connecter");
+		mnFichier.add(mntmDisconnect);
+		mntmDisconnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Connection frame = new Connection();
+				frame.setVisible(true);
+				App.this.dispose();
+			}
+		});
 		mntmOuvrirDatabase = new JMenuItem("Ouvrir database");
+		mntmOuvrirDatabase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				List<Bibliotheque.Livre> livres = Livre_dataAccess.getLivres();
+				if(livres != null)
+				if(livres.size() > 0)
+				for(Bibliotheque.Livre livre : livres)
+				{
+					meslivres.add(livre);
+					String[] test = livre.parseObject();
+					tmodel.addRow(livre.parseObject());
+				}
+			}
+		});
 		mnFichier.add(mntmOuvrirDatabase);
 
 		mntmSynchroniser = new JMenuItem("Synchroniser");
@@ -572,12 +575,12 @@ public class App extends JFrame {
 						{
 							for(Bibliotheque.Livre bookdb : livresdb)
 							{
-								elementDontExists = false;
+								elementDontExists = true;
 								for(Bibliotheque.Livre bookxml : livres)
 								{
 									if(bookxml.titre.equals(bookdb.titre))
 									{
-										bookxml.bookID = bookdb.bookID;
+										bookxml.livreId = bookdb.livreId;
 										bookxml.titre = bookdb.titre;
 										bookxml.presentation = bookdb.presentation;
 										bookxml.colonne = bookdb.colonne;
@@ -591,6 +594,7 @@ public class App extends JFrame {
 										bookxml.auteur.auteurId = bookdb.auteur.auteurId;
 										bookxml.auteur.nom = bookdb.auteur.nom;
 										bookxml.auteur.prenom = bookdb.auteur.prenom;
+										elementDontExists = false;
 									}
 									else
 									{
@@ -606,7 +610,7 @@ public class App extends JFrame {
 						if(addTodb) {
 							for(Bibliotheque.Livre bookxml : livres)
 							{
-								elementDontExists = false;
+								elementDontExists = true;
 								for(Bibliotheque.Livre bookdb : livresdb)
 								{
 									if(bookxml.titre.equals(bookdb.titre))
@@ -625,9 +629,14 @@ public class App extends JFrame {
 										bookdb.auteur.nom = bookxml.auteur.nom;
 										bookdb.auteur.prenom = bookxml.auteur.prenom;
 										Auteur_dataAccess.updateAuteur(bookdb.auteur.auteurId, bookdb.auteur.nom, bookdb.auteur.prenom);
-										Livre_dataAccess.updateLivre(bookdb.bookID, bookdb.titre, bookdb.presentation,
+										Livre_dataAccess.updateLivre(bookdb.livreId, bookdb.titre, bookdb.presentation,
 												Integer.parseInt(bookdb.parution), Integer.parseInt(bookdb.colonne), Integer.parseInt(bookdb.rangee),
 												bookdb.url, bookdb.etat, bookdb.personne, bookdb.bibliothequeId, bookxml.auteur.auteurId);
+										elementDontExists = false;
+									}
+									else
+									{
+										elementDontExists = true;
 									}
 								}
 								if(elementDontExists)
@@ -641,8 +650,80 @@ public class App extends JFrame {
 								}
 							}
 						}
-						//update or add users
 						xmlOpened = true;
+						//update or add users
+						usersdb = User_dataAccess.getUsers();
+						
+						boolean adduserTodb = false;
+						boolean adduserToxml = false;
+						if(usersdb.size() > users.size())
+							adduserToxml = true;
+						if(usersdb.size() < users.size())
+							adduserTodb = true;
+						if(adduserToxml) {
+							//start
+							for(Credential.User userdb : usersdb)
+							{
+								elementDontExists = true;
+								for(Credential.User userxml : users)
+								{
+									if(userdb.userID == userxml.userID)
+									{
+										userxml.login = userdb.login;
+										userxml.mail = userdb.mail;
+										userxml.credentialId = userdb.credentialId;
+										userxml.password = userdb.password;
+										userxml.role = userdb.role;
+										userxml.userID = userdb.userID;
+										userxml.disable = userdb.disable;
+										elementDontExists = false;
+									}
+									else
+									{
+										elementDontExists = true;
+									}
+								}
+								if(elementDontExists)
+								{
+									users.add(userdb);
+								}
+							}
+							//end
+						}
+						if(adduserTodb) {
+							//ici
+							for(Credential.User userxml : users)
+							{
+								elementDontExists = true;
+								for(Credential.User userdb : usersdb)
+								{
+									if(userdb.userID == userxml.userID)
+									{
+										userdb.login = userxml.login;
+										userdb.mail = userxml.mail;
+										userdb.credentialId = userxml.credentialId;
+										userdb.password = userxml.password;
+										userdb.role = userxml.role;
+										userdb.userID = userxml.userID;
+										userdb.disable = userxml.disable;
+										User_dataAccess.updateUser(userdb.userID, userdb.login, userdb.password,
+												userdb.mail, userdb.disable, userdb.role.roleID, userdb.credentialId);
+										elementDontExists = false;
+									}
+									else
+									{
+										elementDontExists = true;
+									}
+								}
+								if(elementDontExists)
+								{
+									usersdb.add(userxml);
+									//sql
+									User_dataAccess.insertUser(userxml.login, userxml.password, userxml.mail, userxml.role.roleID, userxml.credentialId);
+								}
+							}
+							//
+						}
 					}
 				}
 				else {
@@ -656,7 +737,160 @@ public class App extends JFrame {
 					}
 					livresdb = Livre_dataAccess.getLivres();
 					//update or add books
+					boolean addTodb = false;
+					boolean addToxml = false;
+					boolean elementDontExists = false;
+					if(livresdb.size() > livresxml.size())
+						addToxml = true;
+					if(livresdb.size() < livresxml.size())
+						addTodb = true;
+					if(addToxml)
+					{
+						for(Bibliotheque.Livre bookdb : livresdb)
+						{
+							elementDontExists = true;
+							for(Bibliotheque.Livre bookxml : livresxml)
+							{
+								if(bookxml.titre.equals(bookdb.titre))
+								{
+									bookxml.livreId = bookdb.livreId;
+									bookxml.titre = bookdb.titre;
+									bookxml.presentation = bookdb.presentation;
+									bookxml.colonne = bookdb.colonne;
+									bookxml.parution = bookdb.parution;
+									bookxml.rangee = bookdb.rangee;
+									bookxml.url = bookdb.url;
+									bookxml.personne = bookdb.personne;
+									bookxml.bibliothequeId = bookdb.bibliothequeId;
+									if(bookxml.auteur == null)
+										bookxml.auteur = new Bibliotheque.Livre.Auteur();
+									bookxml.auteur.auteurId = bookdb.auteur.auteurId;
+									bookxml.auteur.nom = bookdb.auteur.nom;
+									bookxml.auteur.prenom = bookdb.auteur.prenom;
+									elementDontExists = false;
+								}
+								else
+								{
+									elementDontExists = true;
+								}
+							}
+							if(elementDontExists)
+							{
+								livresxml.add(bookdb);
+							}
+						}
+					}
+					if(addTodb) {
+						for(Bibliotheque.Livre bookxml : livresxml)
+						{
+							elementDontExists = true;
+							for(Bibliotheque.Livre bookdb : livresdb)
+							{
+								if(bookxml.titre.equals(bookdb.titre))
+								{
+									bookdb.titre = bookxml.titre;
+									bookdb.presentation = bookxml.presentation;
+									bookdb.colonne = bookxml.colonne;
+									bookdb.parution = bookxml.parution;
+									bookdb.rangee = bookxml.rangee;
+									bookdb.url = bookxml.url;
+									bookdb.personne = bookxml.personne;
+									bookdb.bibliothequeId = bookxml.bibliothequeId;
+									if(bookdb.auteur == null)
+										bookdb.auteur = new Bibliotheque.Livre.Auteur();
+									bookdb.auteur.auteurId = bookxml.auteur.auteurId;
+									bookdb.auteur.nom = bookxml.auteur.nom;
+									bookdb.auteur.prenom = bookxml.auteur.prenom;
+									Auteur_dataAccess.updateAuteur(bookdb.auteur.auteurId, bookdb.auteur.nom, bookdb.auteur.prenom);
+									Livre_dataAccess.updateLivre(bookdb.livreId, bookdb.titre, bookdb.presentation,
+											Integer.parseInt(bookdb.parution), Integer.parseInt(bookdb.colonne), Integer.parseInt(bookdb.rangee),
+											bookdb.url, bookdb.etat, bookdb.personne, bookdb.bibliothequeId, bookxml.auteur.auteurId);
+									elementDontExists = false;
+								}
+							}
+							if(elementDontExists)
+							{
+								livresdb.add(bookxml);
+								int auteurid = Auteur_dataAccess.insertAuteur(bookxml.auteur.nom, bookxml.auteur.prenom);
+								Livre_dataAccess.insertLivre(bookxml.titre, bookxml.presentation, 
+										Integer.parseInt(bookxml.parution), Integer.parseInt(bookxml.colonne), Integer.parseInt(bookxml.rangee),
+										bookxml.url, bookxml.etat, bookxml.personne,
+										bookxml.bibliothequeId, auteurid);
+							}
+						}
+					}
+					xmlOpened = true;
 					//update or add users
+					usersdb = User_dataAccess.getUsers();
+					
+					boolean adduserTodb = false;
+					boolean adduserToxml = false;
+					if(usersdb.size() > users.size())
+						adduserToxml = true;
+					if(usersdb.size() < users.size())
+						adduserTodb = true;
+					if(adduserToxml) {
+						//start
+						for(Credential.User userdb : usersdb)
+						{
+							elementDontExists = false;
+							for(Credential.User userxml : users)
+							{
+								if(userdb.userID == userxml.userID)
+								{
+									userxml.login = userdb.login;
+									userxml.mail = userdb.mail;
+									userxml.credentialId = userdb.credentialId;
+									userxml.password = userdb.password;
+									userxml.role = userdb.role;
+									userxml.userID = userdb.userID;
+									userxml.disable = userdb.disable;
+								}
+								else
+								{
+									elementDontExists = true;
+								}
+							}
+							if(elementDontExists)
+							{
+								users.add(userdb);
+							}
+						}
+						//end
+					}
+					if(adduserTodb) {
+						//ici
+						for(Credential.User userxml : users)
+						{
+							elementDontExists = false;
+							for(Credential.User userdb : usersdb)
+							{
+								if(userdb.userID == userxml.userID)
+								{
+									userdb.login = userxml.login;
+									userdb.mail = userxml.mail;
+									userdb.credentialId = userxml.credentialId;
+									userdb.password = userxml.password;
+									userdb.role = userxml.role;
+									userdb.userID = userxml.userID;
+									userdb.disable = userxml.disable;
+									User_dataAccess.updateUser(userdb.userID, userdb.login, userdb.password,
+											userdb.mail, userdb.disable, userdb.role.roleID, userdb.credentialId);
+								}
+								else
+								{
+									elementDontExists = true;
+								}
+							}
+							if(elementDontExists)
+							{
+								usersdb.add(userxml);
+								//sql
+								User_dataAccess.insertUser(userxml.login, userxml.password, userxml.mail, userxml.role.roleID, userxml.credentialId);
+							}
+						}
+						//
+					}
 				}
 			}
 		});
@@ -793,7 +1027,8 @@ public class App extends JFrame {
 					e1.printStackTrace();
 				}
 				cbEtat.setSelectedItem(tmodel.getValueAt(editselectedrow, 8).toString());
-				txtPersonne.setText(tmodel.getValueAt(editselectedrow, 9).toString());
+				if(tmodel.getValueAt(editselectedrow, 9) != null)
+					txtPersonne.setText(tmodel.getValueAt(editselectedrow, 9).toString());
 			}
 		});
 		btnNewButton_2.setBounds(15, 45, 99, 23);
@@ -816,9 +1051,7 @@ public class App extends JFrame {
 				
 				Bibliotheque.Livre livre = Livre_dataAccess.getLivre(titre, Integer.parseInt(parution));
 				Auteur_dataAccess.updateAuteur(livre.auteur.auteurId, nomAuteur, prenomAuteur);
-				Livre_dataAccess.updateLivre(livre.bookID, titre, presentation,
-						Integer.parseInt(parution), Integer.parseInt(colonne), Integer.parseInt(rangee),
-						url, etat, personne, livre.bibliothequeId, livre.auteur.auteurId);
+				Livre_dataAccess.updateLivre(livre.livreId, titre, presentation, Integer.parseInt(parution), Integer.parseInt(colonne), Integer.parseInt(rangee), url, etat, personne, livre.bibliothequeId, livre.auteur.auteurId);
 				int myeditedrow = -1;
 				int z = tmodel.getRowCount();
 				for(int i = 0; i < z ; i++)

@@ -22,7 +22,7 @@ public class Livre_dataAccess {
 				ResultSet rs = cstmt.getResultSet();
 				while(rs.next()) {
 					Bibliotheque.Livre livre = new Bibliotheque.Livre();
-					livre.bookID = Integer.parseInt(rs.getString("LivreId"));
+					livre.livreId = Integer.parseInt(rs.getString("LivreId"));
 					livre.colonne = rs.getString("Colonne");
 					livre.rangee = rs.getString("Rangee");
 					livre.parution = rs.getString("Parution");
@@ -52,14 +52,14 @@ public class Livre_dataAccess {
 		String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=Baj;integratedSecurity=true";
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
-					.prepareCall("{call SP_GetLivreByTitre}")) {
+					.prepareCall("{call SP_GetLivreByTitre(?,?)}")) {
 				cstmt.setString("titre",titre);
-				cstmt.setString("parution",String.valueOf(parution));
+				cstmt.setInt("parution",parution);
 				cstmt.execute();
 				ResultSet rs = cstmt.getResultSet();
 				while(rs.next()) {
 					
-					livre.bookID = Integer.parseInt(rs.getString("LivreId"));
+					livre.livreId = Integer.parseInt(rs.getString("LivreId"));
 					livre.colonne = rs.getString("Colonne");
 					livre.rangee = rs.getString("Rangee");
 					livre.parution = rs.getString("Parution");
@@ -105,7 +105,7 @@ public class Livre_dataAccess {
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
 					.prepareCall("{call SP_InsertOrUpdateLivre(?,?,?,?,?,?,?,?,?,?,?)}")) {
-				
+				cstmt.setString("LivreId", "0");
 				cstmt.setString("Titre",titre);
 				cstmt.setString("Presentation",presentation);
 				cstmt.setString("Parution",String.valueOf(parution));
@@ -115,7 +115,7 @@ public class Livre_dataAccess {
 				cstmt.setString("Etat",etat);
 				cstmt.setString("Responsable",responsable);
 				cstmt.setString("BibliothequeId",String.valueOf(bibliothequeid));
-				cstmt.setString("AuteurId",String.valueOf(auteurid));
+				cstmt.setInt("AuteurId",auteurid);
 	
 				cstmt.execute();
 			}
@@ -132,7 +132,7 @@ public class Livre_dataAccess {
 			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
 					.prepareCall("{call SP_InsertOrUpdateLivre(?,?,?,?,?,?,?,?,?,?,?)}")) {
 				
-				cstmt.setString("BibliothequeId",String.valueOf(livreid));
+				cstmt.setString("LivreId",String.valueOf(livreid));
 				cstmt.setString("Titre",titre);
 				cstmt.setString("Presentation",presentation);
 				cstmt.setString("Parution",String.valueOf(parution));
@@ -142,7 +142,7 @@ public class Livre_dataAccess {
 				cstmt.setString("Etat",etat);
 				cstmt.setString("Responsable",responsable);
 				cstmt.setString("BibliothequeId",String.valueOf(bibliothequeid));
-				cstmt.setString("AuteurId",String.valueOf(auteurid));
+				cstmt.setInt("AuteurId",auteurid);
 	
 				cstmt.execute();
 			}
