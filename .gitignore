@@ -24,3 +24,5 @@ hs_err_pid*
 /DemoBiblio.docx
 /.settings/org.eclipse.jdt.core.prefs
 /.settings/org.eclipse.jdt.core.prefs
+src/.DS_Store
+.DS_Store
