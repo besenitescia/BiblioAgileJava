@@ -8,6 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.xml.bind.JAXBException;
+
+import dataAccess.User_dataAccess;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,6 +18,7 @@ import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
@@ -83,11 +87,29 @@ public class Connection extends JFrame {
 				if(users.size() > 0)
 				for(Credential.User user : users)
 				{
+					ArrayList<Credential.User> usersfromdb = new ArrayList<Credential.User>();
+					usersfromdb = User_dataAccess.getUserByLogin(login, password);
+					if(usersfromdb.size() > 0) {
+						if(!usersfromdb.get(0).disable) {
+							isConnected = true;
+							App frame = new App(usersfromdb.get(0));
+							frame.setVisible(true);
+							Connection.this.dispose();
+						}
+						else {
+							JOptionPane.showMessageDialog(Connection.this,
+								    "Votre compte n'a pas encore été activé.",
+								    "Erreur",
+								    JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
 					if(user.login.equals(login) && user.password.equals(password)) {
-						isConnected = true;
-						App frame = new App(user);
-						frame.setVisible(true);
-						Connection.this.dispose();
+						if(!isConnected) {
+							isConnected = true;
+							App frame = new App(user);
+							frame.setVisible(true);
+							Connection.this.dispose();
+						}
 					}
 				}
 				if(!isConnected)

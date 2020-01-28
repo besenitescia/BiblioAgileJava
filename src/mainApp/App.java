@@ -34,6 +34,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -47,8 +48,6 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
@@ -65,11 +64,16 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
+import dataAccess.Auteur_dataAccess;
+import dataAccess.Livre_dataAccess;
+import mainApp.Bibliotheque.Livre;
+
 
 
 public class App extends JFrame {
 	static Mylogger log = new Mylogger("C:\\Users\\Burak\\Desktop\\java\\");
-	
+	private ArrayList<Bibliotheque.Livre> livresxml;
+	public boolean xmlOpened = false;
 	private JPanel contentPane;
 	private JTable biblio;
 	private JTextField txtTitre;
@@ -100,6 +104,8 @@ public class App extends JFrame {
 	private JComboBox cbEtat;
 	private JTextField txtSearch;
 	private JLabel lblSearch;
+	private JMenuItem mntmOuvrirDatabase;
+	private JMenuItem mntmSynchroniser;
 	/**
 	 * Launch the application.
 	 */
@@ -166,6 +172,9 @@ public class App extends JFrame {
 				txtUrl.setText("");
 				cbEtat.setSelectedIndex(0);
 				txtPersonne.setText("");
+				int auteurid = Auteur_dataAccess.insertAuteur(nomAuteur, prenomAuteur);
+				Livre_dataAccess.insertLivre(titre, presentation, Integer.parseInt(parution),
+						Integer.parseInt(colonne), Integer.parseInt(rangee), url, etat, personne, 1, auteurid);
 			}
 		});
 		btnNewButton.setBounds(15, 218, 99, 23);
@@ -176,6 +185,7 @@ public class App extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				tmodel.removeRow(biblio.getSelectedRow());
+				Livre_dataAccess.deleteLivre(0);
 			}
 		});
 		btnNewButton_1.setBounds(132, 45, 114, 23);
@@ -251,6 +261,28 @@ public class App extends JFrame {
 		txtParution.setColumns(10);
 		
 		txtColonne = new JTextField();
+		txtColonne.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				criteria();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				criteria();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				criteria();
+			}
+			public void criteria()
+			{
+				if(Integer.class.isInstance(Integer.parseInt(txtColonne.getText()))) {
+					if(Integer.parseInt(txtColonne.getText()) < 0 || Integer.parseInt(txtColonne.getText()) > 5) {
+						// bordure rouge + message
+					
+						txtColonne.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new LineBorder(Color.red, 1)));
+					}
+				}
+				
+			}
+		});
 		txtColonne.setEnabled(user.role.right.edit);
 		txtColonne.setBounds(126, 131, 184, 20);
 		panel.add(txtColonne);
@@ -297,6 +329,7 @@ public class App extends JFrame {
 		panel.add(lblNewLabel_3);
 		
 		cbEtat = new JComboBox();
+		
 		cbEtat.setEnabled(user.role.right.edit);
 		cbEtat.setModel(new DefaultComboBoxModel(new String[] {"Pr\u00EAt\u00E9", "Emprunt\u00E9", "Acquis"}));
 		cbEtat.setBounds(126, 239, 184, 22);
@@ -308,7 +341,7 @@ public class App extends JFrame {
 		
 		mnFichier = new JMenu("Fichier");
 		menuBar.add(mnFichier);
-		
+		ArrayList<Bibliotheque.Livre> meslivres = new ArrayList<Bibliotheque.Livre>();
 		mntmOuvrir = new JMenuItem("Ouvrir");
 		mntmOuvrir.setEnabled(user.role.right.read);
 		mntmOuvrir.addActionListener(new ActionListener() {
@@ -329,12 +362,15 @@ public class App extends JFrame {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					livresxml = (ArrayList<Livre>) livres;
 					if(livres != null)
 					if(livres.size() > 0)
 					for(Bibliotheque.Livre livre : livres)
 					{
+						meslivres.add(livre);
 						tmodel.addRow(livre.parseObject());
 					}
+					xmlOpened = true;
 				}
 			}
 		});
@@ -356,135 +392,195 @@ public class App extends JFrame {
 		mntmExport.setEnabled(user.role.right.export);
 		mntmExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				XWPFDocument document = new XWPFDocument();
-				//header
-		        CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
-		        XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
 				
-					//write header content
-				CTP ctpHeader = CTP.Factory.newInstance();
-		        CTR ctrHeader = ctpHeader.addNewR();
-		        CTText ctHeader = ctrHeader.addNewT();
-		        Date date = new Date();
-		        SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-				String headerText = fmt.format(date) 
-					+ "                                                               "
-					+ "                                                               "
-					+ " Bibliotheque";
-				ctHeader.setStringValue(headerText);	
-				XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
-		        XWPFParagraph[] parsHeader = new XWPFParagraph[1];
-		        parsHeader[0] = headerParagraph;
-		        policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
-				// first page
-				XWPFParagraph title = document.createParagraph();
-				title.setVerticalAlignment(TextAlignment.CENTER);
-				title.setAlignment(ParagraphAlignment.CENTER);
-				title.setPageBreak(true);
-				XWPFRun titleRun = title.createRun();
-				titleRun.setText("Bibliotheque");
-				titleRun.setBold(true);
-				titleRun.setFontFamily("Courier");
-				titleRun.setFontSize(20);
-				// summary
-				XWPFParagraph title2 = document.createParagraph();
-				XWPFRun titleRun2 = title2.createRun();
-				titleRun2.setText("Sommaire");
-				titleRun2.setBold(true);
-				titleRun2.setFontFamily("Courier");
-				titleRun2.setFontSize(20);
-					//title auteurs
-				XWPFParagraph title3 = document.createParagraph();
-				title3.setBorderBottom(Borders.BASIC_BLACK_DASHES);
-				XWPFRun titleRun3 = title3.createRun();
-				titleRun3.setText("Auteurs");
-				titleRun3.setFontFamily("Courier");
-				titleRun3.setFontSize(20);
-						//auteurs
-				XWPFParagraph pAuthors = document.createParagraph();
-				XWPFRun runAuthors = pAuthors.createRun();
-				String authors = "";
-				docxData = getAuthors();
-				for(String author:docxData)
-				{
-					authors += author + "\n ";
-				}
-				
-				runAuthors.setText(authors);
-				runAuthors.setFontFamily("Courier");
-				runAuthors.setFontSize(11);
-					// title booklended
-				XWPFParagraph title4 = document.createParagraph();
-				title4.setBorderBottom(Borders.BASIC_BLACK_DASHES);
-				XWPFRun titleRun4 = title4.createRun();
-				titleRun4.setText("Livres prêtés");
-				titleRun4.setFontFamily("Courier");
-				titleRun4.setFontSize(20);
-						// bookLended data
-				
-				//create table
-				XWPFTable table = document.createTable();
-				//create first row
-				XWPFTableRow tableRowOne = table.getRow(0);
-				tableRowOne.getCell(0).setText("Titre du livre");
-				tableRowOne.addNewTableCell().setText("Personne");
-				bookLendedByPerson = getBooksLended();
-				for(int i = 1; i < bookLendedByPerson.size()+1; i++)
-				{
-					XWPFTableRow tableRow = table.createRow();
-					tableRow.getCell(0).setText(bookLendedByPerson.get(i - 1).get(0));
-					tableRow.getCell(1).setText(bookLendedByPerson.get(i - 1).get(1));
-				}
-				//page break
-				XWPFParagraph pagebreak = document.createParagraph();
-				pagebreak.setPageBreak(true);
-				
-				for(List<String>AuthorsInfo:getAuthorsBooks())
-				{
-					XWPFParagraph info = document.createParagraph();
-					XWPFRun inforun = info.createRun();
-					String aInfo = "";
-					for(String infos:AuthorsInfo) {
-						aInfo += infos + "\n";
-					}
-					inforun.setText(aInfo);
-					inforun.setBold(true);
-					inforun.setFontFamily("Courier");
-					inforun.setFontSize(11);
-					
-					XWPFParagraph imgPg = document.createParagraph();
-					XWPFRun imgrun = imgPg.createRun();
-					try {
-						String url = AuthorsInfo.get(4);
-						InputStream is = new URL(url).openStream();
-			    	    imgrun.addBreak();
-						imgrun.addPicture(is, XWPFDocument.PICTURE_TYPE_JPEG, "", Units.toEMU(200), Units.toEMU(200));
-					} catch (InvalidFormatException | IOException  e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} // 200x200 pixels
-						    
-
-					
-					XWPFParagraph pagebreak2 = document.createParagraph();
-					pagebreak2.setPageBreak(true);
-					
-				}
-				
-				//fin du format & génération du docx
 				try {
-					FileOutputStream out = new FileOutputStream("C:\\Users\\Melih\\Desktop\\Bibliotheque.docx");
-					
-					document.write(out);
-					out.close();
-					document.close();
+					Export exportdoc = new Export(meslivres);
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+//				XWPFDocument document = new XWPFDocument();
+//				//header
+//		        CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+//		        XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+//				
+//					//write header content
+//				CTP ctpHeader = CTP.Factory.newInstance();
+//		        CTR ctrHeader = ctpHeader.addNewR();
+//		        CTText ctHeader = ctrHeader.addNewT();
+//		        Date date = new Date();
+//		        SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+//				String headerText = fmt.format(date) 
+//					+ "                                                               "
+//					+ "                                                               "
+//					+ " Bibliotheque";
+//				ctHeader.setStringValue(headerText);	
+//				XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+//		        XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+//		        parsHeader[0] = headerParagraph;
+//		        policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+//				// first page
+//				XWPFParagraph title = document.createParagraph();
+//				title.setVerticalAlignment(TextAlignment.CENTER);
+//				title.setAlignment(ParagraphAlignment.CENTER);
+//				title.setPageBreak(true);
+//				XWPFRun titleRun = title.createRun();
+//				titleRun.setText("Bibliotheque");
+//				titleRun.setBold(true);
+//				titleRun.setFontFamily("Courier");
+//				titleRun.setFontSize(20);
+//				// summary
+//				XWPFParagraph title2 = document.createParagraph();
+//				XWPFRun titleRun2 = title2.createRun();
+//				titleRun2.setText("Sommaire");
+//				titleRun2.setBold(true);
+//				titleRun2.setFontFamily("Courier");
+//				titleRun2.setFontSize(20);
+//					//title auteurs
+//				XWPFParagraph title3 = document.createParagraph();
+//				title3.setBorderBottom(Borders.BASIC_BLACK_DASHES);
+//				XWPFRun titleRun3 = title3.createRun();
+//				titleRun3.setText("Auteurs");
+//				titleRun3.setFontFamily("Courier");
+//				titleRun3.setFontSize(20);
+//						//auteurs
+//				XWPFParagraph pAuthors = document.createParagraph();
+//				XWPFRun runAuthors = pAuthors.createRun();
+//				String authors = "";
+//				docxData = getAuthors();
+//				for(String author:docxData)
+//				{
+//					authors += author + "\n ";
+//				}
+//				
+//				runAuthors.setText(authors);
+//				runAuthors.setFontFamily("Courier");
+//				runAuthors.setFontSize(11);
+//					// title booklended
+//				XWPFParagraph title4 = document.createParagraph();
+//				title4.setBorderBottom(Borders.BASIC_BLACK_DASHES);
+//				XWPFRun titleRun4 = title4.createRun();
+//				titleRun4.setText("Livres prêtés");
+//				titleRun4.setFontFamily("Courier");
+//				titleRun4.setFontSize(20);
+//						// bookLended data
+//				
+//				//create table
+//				XWPFTable table = document.createTable();
+//				//create first row
+//				XWPFTableRow tableRowOne = table.getRow(0);
+//				tableRowOne.getCell(0).setText("Titre du livre");
+//				tableRowOne.addNewTableCell().setText("Personne");
+//				bookLendedByPerson = getBooksLended();
+//				for(int i = 1; i < bookLendedByPerson.size()+1; i++)
+//				{
+//					XWPFTableRow tableRow = table.createRow();
+//					tableRow.getCell(0).setText(bookLendedByPerson.get(i - 1).get(0));
+//					tableRow.getCell(1).setText(bookLendedByPerson.get(i - 1).get(1));
+//				}
+//				//page break
+//				XWPFParagraph pagebreak = document.createParagraph();
+//				pagebreak.setPageBreak(true);
+//				
+//				for(List<String>AuthorsInfo:getAuthorsBooks())
+//				{
+//					XWPFParagraph info = document.createParagraph();
+//					XWPFRun inforun = info.createRun();
+//					String aInfo = "";
+//					for(String infos:AuthorsInfo) {
+//						aInfo += infos + "\n";
+//					}
+//					inforun.setText(aInfo);
+//					inforun.setBold(true);
+//					inforun.setFontFamily("Courier");
+//					inforun.setFontSize(11);
+//					
+//					XWPFParagraph imgPg = document.createParagraph();
+//					XWPFRun imgrun = imgPg.createRun();
+//					try {
+//						String url = AuthorsInfo.get(4);
+//						InputStream is = new URL(url).openStream();
+//			    	    imgrun.addBreak();
+//						imgrun.addPicture(is, XWPFDocument.PICTURE_TYPE_JPEG, "", Units.toEMU(200), Units.toEMU(200));
+//					} catch (InvalidFormatException | IOException  e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					} // 200x200 pixels
+//						    
+//
+//					
+//					XWPFParagraph pagebreak2 = document.createParagraph();
+//					pagebreak2.setPageBreak(true);
+//					
+//				}
+//				
+//				//fin du format & génération du docx
+//				try {
+//					FileOutputStream out = new FileOutputStream("C:\\Users\\Burak\\Desktop\\java\\Bibliotheque.docx");
+//					
+//					document.write(out);
+//					out.close();
+//					document.close();
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+				
 				log.write(0, "export done by " + user.role.description + " : " + user.login);
 			}
 		});
+		
+		mntmOuvrirDatabase = new JMenuItem("Ouvrir database");
+		mnFichier.add(mntmOuvrirDatabase);
+
+		mntmSynchroniser = new JMenuItem("Synchroniser");
+		mntmSynchroniser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<Bibliotheque.Livre> livresdb = new ArrayList<Bibliotheque.Livre>();
+				ArrayList<Credential.User> usersdb = new ArrayList<Credential.User>();
+				XmlUtils xml1 = new XmlUtils();
+				List<Credential.User> users = new ArrayList<Credential.User>();
+				if(!xmlOpened) {
+					JFileChooser file = new JFileChooser();
+					//file.setFileFilter();
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("XML FILES", "xml", "xsd");
+					file.setFileFilter(filter);
+					int result = file.showOpenDialog(contentPane);
+					if(result == JFileChooser.APPROVE_OPTION)
+					{
+						File selectedFile = file.getSelectedFile();
+						XmlUtils xml = new XmlUtils();
+						List<Bibliotheque.Livre> livres = null;
+						
+						try {
+							livres = xml.testXmlToObject(selectedFile.getAbsolutePath()).livre;
+							users = xml1.XmlToCredential().user;
+						} catch (FileNotFoundException | JAXBException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						livresdb = Livre_dataAccess.getLivres();
+						//update or add books
+						//update or add users
+						xmlOpened = true;
+					}
+				}
+				else {
+					//livresxml
+					
+					try {
+						users = xml1.XmlToCredential().user;
+					} catch (FileNotFoundException | JAXBException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					livresdb = Livre_dataAccess.getLivres();
+					//update or add books
+					//update or add users
+				}
+			}
+		});
+		mnFichier.add(mntmSynchroniser);
 		mnFichier.add(mntmExport);
 		mnFichier.add(mntmFermer);
 		
@@ -536,6 +632,18 @@ public class App extends JFrame {
 			}
 		});
 		mnEdition.add(mntmSaveAs);
+		
+		JMenu mnUtilisateurs = new JMenu("Utilisateurs");
+		menuBar.add(mnUtilisateurs);
+		
+		JMenuItem mntmGrer = new JMenuItem("G\u00E9rer");
+		mntmGrer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ValidateUser frame = new ValidateUser();
+				frame.setVisible(true);
+			}
+		});
+		mnUtilisateurs.add(mntmGrer);
 		
 		JMenu mnPropos = new JMenu("\u00C0 propos");
 		menuBar.add(mnPropos);
@@ -628,6 +736,11 @@ public class App extends JFrame {
 				String etat = cbEtat.getModel().getSelectedItem().toString();
 				String personne = txtPersonne.getText();
 				
+				Bibliotheque.Livre livre = Livre_dataAccess.getLivre(titre, Integer.parseInt(parution));
+				Auteur_dataAccess.updateAuteur(livre.auteur.auteurId, nomAuteur, prenomAuteur);
+				Livre_dataAccess.updateLivre(livre.bookID, titre, presentation,
+						Integer.parseInt(parution), Integer.parseInt(colonne), Integer.parseInt(rangee),
+						url, etat, personne, livre.bibliothequeId, livre.auteur.auteurId);
 				int myeditedrow = -1;
 				int z = tmodel.getRowCount();
 				for(int i = 0; i < z ; i++)

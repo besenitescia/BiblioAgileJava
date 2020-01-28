@@ -23,18 +23,18 @@ public class Livre_dataAccess {
 				while(rs.next()) {
 					Bibliotheque.Livre livre = new Bibliotheque.Livre();
 					livre.bookID = Integer.parseInt(rs.getString("LivreId"));
-					livre.colonne = rs.getString("LivreId");
-					livre.rangee = rs.getString("LivreId");
-					livre.parution = rs.getString("LivreId");
-					livre.etat = rs.getString("LivreId");
-					livre.personne = rs.getString("LivreId");
-					livre.url = rs.getString("LivreId");
-					livre.presentation = rs.getString("LivreId");
-					livre.titre = rs.getString("LivreId");
+					livre.colonne = rs.getString("Colonne");
+					livre.rangee = rs.getString("Rangee");
+					livre.parution = rs.getString("Parution");
+					livre.etat = rs.getString("Etat");
+					livre.personne = rs.getString("Responsable");
+					livre.url = rs.getString("Url");
+					livre.presentation = rs.getString("Presentation");
+					livre.titre = rs.getString("Titre");
 					Bibliotheque.Livre.Auteur auteur = new Bibliotheque.Livre.Auteur();
 					auteur.auteurId = Integer.parseInt(rs.getString("AuteurId"));
 					auteur.nom = rs.getString("Nom");
-					auteur.prenom = rs.getString("prenom");
+					auteur.prenom = rs.getString("Prenom");
 					livre.auteur = auteur;
 					livre.bibliothequeId = Integer.parseInt(rs.getString("BibliothequeId"));
 					livres.add(livre);
@@ -45,6 +45,42 @@ public class Livre_dataAccess {
             e.printStackTrace();
         }
 		return livres;
+	}
+
+	public static Bibliotheque.Livre getLivre(String titre, int parution) {
+		Bibliotheque.Livre livre = new Bibliotheque.Livre();
+		String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=Baj;integratedSecurity=true";
+		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
+			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
+					.prepareCall("{call SP_GetLivreByTitre}")) {
+				cstmt.setString("titre",titre);
+				cstmt.setString("parution",String.valueOf(parution));
+				cstmt.execute();
+				ResultSet rs = cstmt.getResultSet();
+				while(rs.next()) {
+					
+					livre.bookID = Integer.parseInt(rs.getString("LivreId"));
+					livre.colonne = rs.getString("Colonne");
+					livre.rangee = rs.getString("Rangee");
+					livre.parution = rs.getString("Parution");
+					livre.etat = rs.getString("Etat");
+					livre.personne = rs.getString("Responsable");
+					livre.url = rs.getString("Url");
+					livre.presentation = rs.getString("Presentation");
+					livre.titre = rs.getString("Titre");
+					Bibliotheque.Livre.Auteur auteur = new Bibliotheque.Livre.Auteur();
+					auteur.auteurId = Integer.parseInt(rs.getString("AuteurId"));
+					auteur.nom = rs.getString("Nom");
+					auteur.prenom = rs.getString("Prenom");
+					livre.auteur = auteur;
+					livre.bibliothequeId = Integer.parseInt(rs.getString("BibliothequeId"));
+				}
+			}
+		}
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+		return livre;
 	}
 
 	public static void deleteLivre(int livreid) {

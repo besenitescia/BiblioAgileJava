@@ -222,4 +222,24 @@ public class User_dataAccess {
             e.printStackTrace();
         }
 	}
+
+	public static ArrayList<String> getUsersMail(){
+		ArrayList<String> mails = new ArrayList<String>();
+		String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=Baj;integratedSecurity=true";
+		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
+			try (SQLServerCallableStatement cstmt = (SQLServerCallableStatement) con
+					.prepareCall("{call SP_GetUsersMail}")) {
+	
+				cstmt.execute();
+				ResultSet rs = cstmt.getResultSet();
+				while(rs.next()) {
+					mails.add(rs.getString("Mail"));
+				}
+			}
+		}
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+		return mails;
+	}
 }

@@ -8,6 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.xml.bind.JAXBException;
+
+import dataAccess.User_dataAccess;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
@@ -15,6 +18,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -96,9 +100,14 @@ public class PasswordForgot extends JFrame {
 						Credential cred = xml.XmlToCredential();
 						String login = txtLogin.getText().toLowerCase();
 						String mail = txtMail.getText().toLowerCase();
-						boolean userExist = false;
 						for(Credential.User user : cred.user)
 						{
+							ArrayList<Credential.User> myusers = new ArrayList<Credential.User>();
+							myusers = User_dataAccess.getUserByLogin(login, password);
+							if(myusers.size()>0) {
+								User_dataAccess.updateUser(myusers.get(0).userID, login, password, mail, false, myusers.get(0).role.roleID, 1);
+							}
+							
 							if(user.login.equals(login) && user.mail.equals(mail))
 							{
 								Credential.User.Role.Right right = new Credential.User.Role.Right(false, true, false, false, false, false);
@@ -106,6 +115,7 @@ public class PasswordForgot extends JFrame {
 								Credential.User oneUser = new Credential.User(login, password, mail, false, role);
 								cred.user.add(oneUser);
 								xml.CredentialToXml(cred);
+
 								Connection frame = new Connection();
 								frame.setVisible(true);
 								PasswordForgot.this.dispose();

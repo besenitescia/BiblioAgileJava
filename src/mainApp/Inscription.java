@@ -8,12 +8,17 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.xml.bind.JAXBException;
+
+import dataAccess.User_dataAccess;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -68,27 +73,49 @@ public class Inscription extends JFrame {
 		btnRegister.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				XmlUtils xml = new XmlUtils();
+				ArrayList<String> AlreadyUsedMails = new ArrayList<String>();
+				AlreadyUsedMails = User_dataAccess.getUsersMail();
 				try {
 					Credential creds = xml.XmlToCredential();
 					String login = txtLogin.getText().toLowerCase();
 					String mail = txtMail.getText().toLowerCase();
-					char[] pwd = txtMdp.getPassword();
-					String password = "";
-					for(char c : pwd) {
-						password += c;
+					boolean mailExists = false;
+					for(Credential.User user : creds.user)
+					{
+						if(user.mail.equals(mail)) {
+							mailExists = true;
+							break;
+						}
 					}
-					Credential.User.Role.Right right = new Credential.User.Role.Right(false, true, false, false, false, false);
-					Credential.User.Role role = new Credential.User.Role("USER","User", right);
-					Credential.User oneUser = new Credential.User(login, password, mail, false, role);
-					creds.user.add(oneUser);
-					xml.CredentialToXml(creds);
+					if(!AlreadyUsedMails.contains(mail) && !mailExists)
+					{
+						char[] pwd = txtMdp.getPassword();
+						String password = "";
+						for(char c : pwd) {
+							password += c;
+						}
+						Credential.User.Role.Right right = new Credential.User.Role.Right(false, true, false, false, true, false);
+						Credential.User.Role role = new Credential.User.Role("USER","User", right);
+						Credential.User oneUser = new Credential.User(login, password, mail, true, role);
+						creds.user.add(oneUser);
+						xml.CredentialToXml(creds);
+						
+						User_dataAccess.insertUser(login, password, mail, 2, 1);
+						Connection frame = new Connection();
+						frame.setVisible(true);
+						Inscription.this.dispose();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(Inscription.this,
+							    "Ce mail existe déjà.",
+							    "Infos",
+							    JOptionPane.INFORMATION_MESSAGE);
+					}
 				} catch (FileNotFoundException | JAXBException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				Connection frame = new Connection();
-				frame.setVisible(true);
-				Inscription.this.dispose();
 			}
 		});
 		btnRegister.setBounds(191, 249, 115, 29);

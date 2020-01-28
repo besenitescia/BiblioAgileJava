@@ -13,10 +13,13 @@ as
 begin
 	IF NOT EXISTS(SELECT * FROM [dbo].[Auteur] WHERE [AuteurId] = @AuteurId)
 	begin
+		
 		INSERT INTO [dbo].[Auteur]	([Prenom]
 									,[Nom])
 		values	(@Prenom
 				,@Nom)
+		set @AuteurId = SCOPE_IDENTITY()
+		select @AuteurId
 	end
 	ELSE
 	BEGIN

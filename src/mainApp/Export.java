@@ -29,7 +29,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 @SuppressWarnings("unused")
 public class Export {
 Export(ArrayList<Bibliotheque.Livre> books) throws IOException{	
-    String path = "DemoBiblio.docx";
+    String path = "Bibliotheque.docx";
 	try(FileOutputStream out = new FileOutputStream(new File(path)))  {
 	      //Blank Document
 	      XWPFDocument document = new XWPFDocument(); 
@@ -46,7 +46,7 @@ Export(ArrayList<Bibliotheque.Livre> books) throws IOException{
 			Date date = new Date();
 			String tctDate = format.format(date);
 			
-			String headerText = "generate : "+ tctDate+"Nom du fichier :  DemoBiBlio ";
+			String headerText = tctDate+"  Bibliotheque ";
 			ctHeader.setStringValue(headerText);	
 			XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
 		    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
@@ -58,7 +58,7 @@ Export(ArrayList<Bibliotheque.Livre> books) throws IOException{
 	  		
 	  		
 	  		
-	      run1.setText("Biblo");
+	      run1.setText("Bibliotheque");
 	      run1.setFontSize(100);
 	      para1.setAlignment(ParagraphAlignment.CENTER);
 	      para1.setBorderBottom(Borders.BASIC_THIN_LINES);
@@ -79,7 +79,7 @@ Export(ArrayList<Bibliotheque.Livre> books) throws IOException{
           XWPFRun titreTab = paragraphOutTitreTab.createRun();
           titreTab.isBold();
           titreTab.setFontSize(20);
-          titreTab.setText("Tableau des emprunts");
+          titreTab.setText("Livres prêtés");
           
           XWPFTable table = document.createTable();
           table.setWidth(8000);
